@@ -147,6 +147,7 @@ As a user with recurring responsibilities and time-sensitive tasks, I want to cr
 - **FR-003**: System MUST display a list of all tasks with their ID, title, description, and completion status (Phase I)
 - **FR-004**: System MUST allow users to update task details (title, description, status) (Phase I)
 - **FR-005**: System MUST allow users to delete tasks by their unique ID (Phase I)
+- **FR-016**: System MUST provide feedback when attempting to delete non-existent tasks, showing available tasks list and prompting for verification (Phase I)
 - **FR-006**: System MUST allow users to mark tasks as complete or incomplete (Phase I)
 
 **Phase II Requirements:**
@@ -180,7 +181,9 @@ As a user with recurring responsibilities and time-sensitive tasks, I want to cr
 - **NFR-007**: 95% of users must successfully complete all basic task operations on first attempt
 - **NFR-008**: Users must complete basic task operations (add, view, update, delete, mark complete) in under 30 seconds each
 - **NFR-009**: CLI commands must be intuitive and follow standard command-line conventions
+- **NFR-018**: CLI interface must follow interactive menu-driven approach for all operations
 - **NFR-010**: System must provide clear, helpful error messages for all failure scenarios
+- **NFR-017**: System must reject invalid date formats with specific error message and request valid ISO 8601 format
 
 **Maintainability Requirements:**
 - **NFR-011**: System code must follow clean code principles and be well-documented
@@ -214,7 +217,7 @@ As a user with recurring responsibilities and time-sensitive tasks, I want to cr
   - `title`: Task title (string, required, 1-200 characters)
   - `description`: Task description (string, optional, 0-1000 characters)
   - `status`: Completion status (enum: "incomplete", "complete", default: "incomplete")
-  - `priority`: Task priority level (enum: "low", "medium", "high", default: "medium")
+  - `priority`: Task priority level (enum: "low", "medium", "high", default: "medium", sort order: high → medium → low)
   - `tags`: Array of category tags (string array, optional, 0-10 tags)
   - `due_date`: Optional deadline (ISO 8601 datetime string, optional)
   - `created_date`: Timestamp of creation (ISO 8601 datetime string, required, immutable)
@@ -237,6 +240,17 @@ As a user with recurring responsibilities and time-sensitive tasks, I want to cr
   - `next_occurrence`: Next scheduled occurrence (ISO 8601 datetime string, required)
   - `is_active`: Enable/disable flag (boolean, default: true)
   - `end_date`: Optional end date for recurrence (ISO 8601 datetime string, optional)
+  - `continue_after_completion`: Policy for continuing recurrence after task completion (enum: "always_continue", "prompt_user", "stop_if_completed", default: "always_continue")
+
+## Clarifications
+
+### Session 2025-12-17
+
+- Q: What is the sort order for task priorities? → A: High → Medium → Low priority (most urgent tasks first)
+- Q: What happens to recurring tasks when completed? → A: Continue generating future occurrences with user prompt option (mix of B and C)
+- Q: How should the system handle invalid date formats? → A: Reject with clear error message and request valid input
+- Q: How should the system handle non-existent task deletion? → A: Provide feedback, show available tasks list, and ask for verification (mix of A, C, D)
+- Q: What CLI interface approach should be used? → A: Interactive menu-driven approach
 
 ## Success Criteria *(mandatory)*
 
