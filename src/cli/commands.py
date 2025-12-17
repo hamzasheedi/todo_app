@@ -373,15 +373,58 @@ class TaskManager:
 
     def get_task(self, task_id: str) -> Optional[Task]:
         """
-        Get a specific task by ID.
+        Get a specific task by ID or display number.
+
+        Implements T005: UX & Error Handling framework - consistent task identification
+        that accepts the same identifier format that is displayed.
 
         Args:
-            task_id: ID of the task to retrieve
+            task_id: ID of the task to retrieve (can be UUID or display number)
 
         Returns:
             Task object if found, None otherwise
         """
-        return self.storage.get_task(task_id)
+        # First try to get by UUID
+        task = self.storage.get_task(task_id)
+        if task:
+            return task
+
+        # If not found by UUID, check if it's a display number
+        try:
+            display_number = int(task_id)
+            all_tasks = self.storage.load_tasks()
+            if 1 <= display_number <= len(all_tasks):
+                return all_tasks[display_number - 1]  # Display numbers start from 1
+        except ValueError:
+            # Not a valid number, so it's not a display number
+            pass
+
+        return None
+
+    def get_task_by_display_number(self, display_number: int) -> Optional[Task]:
+        """
+        Get a specific task by its display number (1-indexed).
+
+        Args:
+            display_number: The display number of the task (1-indexed)
+
+        Returns:
+            Task object if found, None otherwise
+        """
+        all_tasks = self.storage.load_tasks()
+        if 1 <= display_number <= len(all_tasks):
+            return all_tasks[display_number - 1]  # Display numbers start from 1
+        return None
+
+    def get_all_tasks_with_numbers(self) -> List[tuple]:
+        """
+        Get all tasks with their display numbers.
+
+        Returns:
+            List of tuples containing (display_number, task)
+        """
+        all_tasks = self.storage.load_tasks()
+        return [(i + 1, task) for i, task in enumerate(all_tasks)]
 
     def update_task_priority(self, task_id: str, priority: str) -> bool:
         """

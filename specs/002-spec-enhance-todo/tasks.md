@@ -64,8 +64,8 @@ Generate a complete, well-structured task breakdown for the project based on the
 ## Phase 2: Foundational Components (6 tasks, estimated 2.5 hours)
 
 - [X] T005 **Implement UX & Error Handling framework** - Create retry-safe, context-preserving interaction patterns
-  - **Acceptance**: Framework implements retry-first behavior, context preservation during validation failures, consistent error messaging, and proper validation ownership as specified in P1-T000
-  - **Output**: `src/cli/ux_framework.py` or integrated validation/handling in `src/cli/commands.py` and `src/cli/menu.py` with retry loops and context preservation
+  - **Acceptance**: Framework implements retry-first behavior, context preservation during validation failures, consistent error messaging, and proper validation ownership as specified in P1-T000. Menu navigation is forgiving with invalid inputs, task creation preserves context during validation errors, and task selection accepts both UUIDs and display numbers.
+  - **Output**: Integrated validation/handling in `src/cli/commands.py` and `src/cli/menu.py` with retry loops, context preservation, and consistent identifier handling
   - **Dependencies**: T001 (needs directory structure)
   - **Traceability**: P1-T000 (UX & Error Handling Framework Implementation), NFR-019-NFR-027, Global CLI UX Rules
 

@@ -8,6 +8,7 @@ from typing import Optional
 from cli.commands import TaskManager, get_task_manager
 from cli.ui import display_tasks, display_task, display_task_details
 from core.task import TaskPriority
+from utils.validators import validate_iso_datetime
 
 
 def get_user_input(prompt: str) -> str:
@@ -23,26 +24,105 @@ def get_user_input(prompt: str) -> str:
     return input(prompt).strip()
 
 
+def get_valid_menu_choice() -> str:
+    """
+    Get a valid menu choice from the user with retry behavior.
+
+    Implements T005: UX & Error Handling framework - retry-safe input handling
+    for menu navigation. Invalid input triggers re-prompt, not menu reset.
+
+    Returns:
+        The user's valid menu choice as a string
+    """
+    while True:
+        choice = input("\nSelect an option (1-16): ").strip()
+        if choice.lower() in ["quit", "exit"]:
+            return "16"
+        if choice in [str(i) for i in range(1, 17)]:
+            return choice
+        print("Invalid choice. Please select a number between 1-16.")
+
+
+def get_valid_task_id(task_manager: TaskManager, prompt: str = "Enter task ID or display number: ") -> Optional[str]:
+    """
+    Get a valid task ID from the user with retry behavior, accepting both UUID and display number.
+
+    Implements T005: UX & Error Handling framework - consistent task identification
+    that accepts the same identifier format that is displayed.
+
+    Args:
+        task_manager: TaskManager instance to check task existence
+        prompt: The prompt to display to the user
+
+    Returns:
+        The valid task ID (UUID) if found, None if user cancels or no tasks exist
+    """
+    all_tasks = task_manager.view_tasks()
+    if not all_tasks:
+        print("No tasks available.")
+        return None
+
+    while True:
+        task_input = get_user_input(prompt)
+        if not task_input:
+            print("Task ID cannot be empty. Please enter a valid ID or display number.")
+            continue
+
+        # Try to get the task using the flexible get_task method
+        task = task_manager.get_task(task_input)
+        if task:
+            return task.id  # Return the actual UUID
+        else:
+            print(f"Task with ID or display number '{task_input}' not found.")
+            print("Available tasks:")
+            display_tasks(all_tasks)
+            print("Please try again or press Ctrl+C to cancel.")
+
+
 def get_task_details_from_user() -> tuple:
     """
-    Prompt the user for task details.
+    Prompt the user for task details with retry-safe validation and context preservation.
+
+    Implements T005: UX & Error Handling framework - retry-safe input handling
+    and context preservation during multi-step task creation.
 
     Returns:
         A tuple containing (title, description, priority, tags, due_date)
     """
     print("\n--- Add New Task ---")
-    title = get_user_input("Enter task title: ")
+
+    # Store previously entered values to preserve context
+    title = None
+    description = None
+    priority = "medium"  # default
+    tags = None
+    due_date = None
+
+    # Get title with validation retry
+    while title is None or title.strip() == "":
+        title = get_user_input("Enter task title: ")
+        if not title or not title.strip():
+            print("Error: Task title cannot be empty. Please enter a valid title.")
 
     description = get_user_input("Enter task description (optional, press Enter to skip): ")
     if not description:
         description = None
 
-    print("Select priority (1-3):")
-    print("1. High")
-    print("2. Medium")
-    print("3. Low")
-    priority_choice = get_user_input("Enter choice (1-3, default is 2): ")
+    # Get priority with validation retry
     priority_map = {"1": "high", "2": "medium", "3": "low"}
+    priority_choice = ""
+    while priority_choice not in priority_map:
+        print("Select priority (1-3):")
+        print("1. High")
+        print("2. Medium")
+        print("3. Low")
+        priority_choice = get_user_input("Enter choice (1-3, default is 2): ")
+        if priority_choice == "":
+            priority_choice = "2"  # default
+            break
+        if priority_choice not in priority_map:
+            print("Invalid choice. Please enter 1, 2, or 3.")
+
     priority = priority_map.get(priority_choice, "medium")
 
     tags_input = get_user_input("Enter tags separated by commas (optional, press Enter to skip): ")
@@ -50,8 +130,16 @@ def get_task_details_from_user() -> tuple:
     if tags_input:
         tags = [tag.strip() for tag in tags_input.split(",") if tag.strip()]
 
+    # Get due date with validation retry
     due_date = get_user_input("Enter due date (YYYY-MM-DD or ISO format, optional, press Enter to skip): ")
-    if not due_date:
+    if due_date:
+        # Validate the date format
+        while due_date and not validate_iso_datetime(due_date):
+            print(f"Error: Invalid ISO 8601 datetime format: {due_date}")
+            due_date = get_user_input("Enter due date (YYYY-MM-DD or ISO format, optional, press Enter to skip): ")
+            if not due_date:
+                break
+    else:
         due_date = None
 
     return title, description, priority, tags, due_date
@@ -87,7 +175,7 @@ def run_menu():
             print("16. Exit")
             print("------------------")
 
-            choice = get_user_input("\nSelect an option (1-16): ")
+            choice = get_valid_menu_choice()
 
             if choice == "1":
                 view_all_tasks(task_manager)
@@ -119,11 +207,9 @@ def run_menu():
                 add_tag_to_task(task_manager)
             elif choice == "15":
                 remove_tag_from_task(task_manager)
-            elif choice == "16" or choice.lower() in ["quit", "exit"]:
+            elif choice == "16":
                 print("Thank you for using the Todo CLI Application. Goodbye!")
                 sys.exit(0)
-            else:
-                print("Invalid choice. Please select a number between 1-16.")
         except KeyboardInterrupt:
             print("\n\nOperation interrupted by user.")
             sys.exit(0)
@@ -154,21 +240,16 @@ def add_new_task(task_manager: TaskManager):
 
 
 def update_existing_task(task_manager: TaskManager):
-    """Update an existing task."""
+    """Update an existing task with retry-safe validation and context preservation."""
     print("\n--- Update Task ---")
-    task_id = get_user_input("Enter task ID to update: ")
+    task_id = get_valid_task_id(task_manager, "Enter task ID or display number to update: ")
+    if not task_id:
+        return
 
     # First, check if the task exists and display its current details
     task = task_manager.get_task(task_id)
     if not task:
         print(f"Task with ID '{task_id}' not found.")
-        # Show available tasks
-        all_tasks = task_manager.view_tasks()
-        if all_tasks:
-            print("\nAvailable tasks:")
-            display_tasks(all_tasks)
-        else:
-            print("No tasks available.")
         return
 
     print(f"\nCurrent task details:")
@@ -184,7 +265,13 @@ def update_existing_task(task_manager: TaskManager):
     print("New priority (1: High, 2: Medium, 3: Low, Enter: keep current):")
     priority_choice = get_user_input(f"Current: {task.priority.name.title()} ")
     priority_map = {"1": "high", "2": "medium", "3": "low"}
-    new_priority = priority_map.get(priority_choice)
+    new_priority = None
+    if priority_choice:
+        if priority_choice in priority_map:
+            new_priority = priority_map[priority_choice]
+        else:
+            print("Invalid choice. Priority not updated.")
+    # If priority_choice is empty, new_priority remains None (no change)
 
     # Process tags
     current_tags = ", ".join(task.tags) if task.tags else ""
@@ -195,8 +282,18 @@ def update_existing_task(task_manager: TaskManager):
     elif new_tags_input == "":  # User pressed enter to clear tags
         new_tags = []
 
+    # Get due date with validation retry
     new_due_date = get_user_input(f"New due date (current: '{task.due_date}'): ")
-    new_due_date = new_due_date if new_due_date else None
+    if new_due_date:
+        # Validate the date format
+        while new_due_date and not validate_iso_datetime(new_due_date):
+            print(f"Error: Invalid ISO 8601 datetime format: {new_due_date}")
+            new_due_date = get_user_input(f"New due date (current: '{task.due_date}'): ")
+            if new_due_date == "":  # User pressed Enter to keep current value
+                new_due_date = None
+                break
+    elif new_due_date == "":  # User pressed Enter to keep current value
+        new_due_date = None
 
     try:
         result = task_manager.update_task(
@@ -218,7 +315,9 @@ def update_existing_task(task_manager: TaskManager):
 def delete_existing_task(task_manager: TaskManager):
     """Delete an existing task."""
     print("\n--- Delete Task ---")
-    task_id = get_user_input("Enter task ID to delete: ")
+    task_id = get_valid_task_id(task_manager, "Enter task ID or display number to delete: ")
+    if not task_id:
+        return
 
     # Use the enhanced delete method with feedback
     task_manager.delete_task_with_feedback(task_id)
@@ -227,7 +326,9 @@ def delete_existing_task(task_manager: TaskManager):
 def mark_task_complete(task_manager: TaskManager):
     """Mark a task as complete."""
     print("\n--- Mark Task Complete ---")
-    task_id = get_user_input("Enter task ID to mark as complete: ")
+    task_id = get_valid_task_id(task_manager, "Enter task ID or display number to mark as complete: ")
+    if not task_id:
+        return
 
     result = task_manager.mark_task_status(task_id, "complete")
     if result:
@@ -244,7 +345,9 @@ def mark_task_complete(task_manager: TaskManager):
 def mark_task_incomplete(task_manager: TaskManager):
     """Mark a task as incomplete."""
     print("\n--- Mark Task Incomplete ---")
-    task_id = get_user_input("Enter task ID to mark as incomplete: ")
+    task_id = get_valid_task_id(task_manager, "Enter task ID or display number to mark as incomplete: ")
+    if not task_id:
+        return
 
     result = task_manager.mark_task_status(task_id, "incomplete")
     if result:
@@ -342,18 +445,14 @@ def search_tasks(task_manager: TaskManager):
 def update_task_priority(task_manager: TaskManager):
     """Update task priority."""
     print("\n--- Update Task Priority ---")
-    task_id = get_user_input("Enter task ID: ")
+    task_id = get_valid_task_id(task_manager, "Enter task ID or display number: ")
+    if not task_id:
+        return
 
     # Check if task exists
     task = task_manager.get_task(task_id)
     if not task:
         print(f"Task with ID '{task_id}' not found.")
-        all_tasks = task_manager.view_tasks()
-        if all_tasks:
-            print("\nAvailable tasks:")
-            display_tasks(all_tasks)
-        else:
-            print("No tasks available.")
         return
 
     print(f"Current priority for '{task.title}': {task.priority.name.title()}")
@@ -380,18 +479,14 @@ def update_task_priority(task_manager: TaskManager):
 def update_task_tags(task_manager: TaskManager):
     """Update task tags completely."""
     print("\n--- Update Task Tags ---")
-    task_id = get_user_input("Enter task ID: ")
+    task_id = get_valid_task_id(task_manager, "Enter task ID or display number: ")
+    if not task_id:
+        return
 
     # Check if task exists
     task = task_manager.get_task(task_id)
     if not task:
         print(f"Task with ID '{task_id}' not found.")
-        all_tasks = task_manager.view_tasks()
-        if all_tasks:
-            print("\nAvailable tasks:")
-            display_tasks(all_tasks)
-        else:
-            print("No tasks available.")
         return
 
     print(f"Current tags for '{task.title}': {', '.join(task.tags) if task.tags else 'None'}")
@@ -412,18 +507,14 @@ def update_task_tags(task_manager: TaskManager):
 def add_tag_to_task(task_manager: TaskManager):
     """Add a single tag to a task."""
     print("\n--- Add Tag to Task ---")
-    task_id = get_user_input("Enter task ID: ")
+    task_id = get_valid_task_id(task_manager, "Enter task ID or display number: ")
+    if not task_id:
+        return
 
     # Check if task exists
     task = task_manager.get_task(task_id)
     if not task:
         print(f"Task with ID '{task_id}' not found.")
-        all_tasks = task_manager.view_tasks()
-        if all_tasks:
-            print("\nAvailable tasks:")
-            display_tasks(all_tasks)
-        else:
-            print("No tasks available.")
         return
 
     print(f"Current tags for '{task.title}': {', '.join(task.tags) if task.tags else 'None'}")
@@ -443,18 +534,14 @@ def add_tag_to_task(task_manager: TaskManager):
 def remove_tag_from_task(task_manager: TaskManager):
     """Remove a single tag from a task."""
     print("\n--- Remove Tag from Task ---")
-    task_id = get_user_input("Enter task ID: ")
+    task_id = get_valid_task_id(task_manager, "Enter task ID or display number: ")
+    if not task_id:
+        return
 
     # Check if task exists
     task = task_manager.get_task(task_id)
     if not task:
         print(f"Task with ID '{task_id}' not found.")
-        all_tasks = task_manager.view_tasks()
-        if all_tasks:
-            print("\nAvailable tasks:")
-            display_tasks(all_tasks)
-        else:
-            print("No tasks available.")
         return
 
     if not task.tags:

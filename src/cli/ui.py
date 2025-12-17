@@ -27,7 +27,7 @@ def display_task(task: Task) -> str:
 
 def display_tasks(tasks: List[Task], show_index: bool = True) -> None:
     """
-    Display a list of tasks.
+    Display a list of tasks with both display number and ID.
 
     Args:
         tasks: List of Task objects to display
@@ -39,9 +39,9 @@ def display_tasks(tasks: List[Task], show_index: bool = True) -> None:
 
     for i, task in enumerate(tasks, 1):
         if show_index:
-            print(f"{i:2d}. {display_task(task)}")
+            print(f"{i:2d}. {display_task(task)} [ID: {task.id[:8]}...]")
         else:
-            print(f"    {display_task(task)}")
+            print(f"    {display_task(task)} [ID: {task.id[:8]}...]")
 
 
 def display_task_details(task: Task) -> None:
