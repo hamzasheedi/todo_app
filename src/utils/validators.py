@@ -9,21 +9,17 @@ from typing import Union
 
 def validate_iso_datetime(datetime_str: str) -> bool:
     """
-    Validate that a string is in ISO 8601 datetime format (not just a date).
-    Specifically requires 'T' as separator, not space, for strict ISO compliance.
+    Validate that a string is in ISO 8601 format (date-only or datetime).
+    Accepts both 'YYYY-MM-DD' and 'YYYY-MM-DDTHH:MM:SS' formats.
 
     Args:
-        datetime_str: String to validate as ISO 8601 datetime
+        datetime_str: String to validate as ISO 8601 format
 
     Returns:
-        True if the string is in valid ISO 8601 datetime format, False otherwise
+        True if the string is in valid ISO 8601 format, False otherwise
     """
     try:
-        # For strict ISO datetime validation, we expect 'T' as separator, not space
-        # Date-only string: "2025-12-31" (length 10, no time)
-        # Proper datetime: "2025-12-31T10:00:00" (contains 'T')
-
-        # Check if it's a date-only format
+        # Check if it's a date-only format (YYYY-MM-DD)
         if (len(datetime_str) == 10 and
             datetime_str.count('-') == 2 and
             '+' not in datetime_str and
@@ -31,13 +27,19 @@ def validate_iso_datetime(datetime_str: str) -> bool:
             'T' not in datetime_str and
             ' ' not in datetime_str and
             not datetime_str.endswith('Z')):
-            return False  # This is a date-only string
+            # Try to parse as date
+            date_parts = datetime_str.split('-')
+            if len(date_parts) == 3:
+                year, month, day = map(int, date_parts)
+                # Validate date components
+                datetime(year, month, day)
+                return True
 
         # If it contains a space separator instead of 'T', it's not strictly ISO datetime
         if ' ' in datetime_str and 'T' not in datetime_str:
             return False  # Space separator is not allowed for strict ISO datetime
 
-        # For everything else (proper ISO datetime format), try to parse it
+        # For datetime format, try to parse it
         parsed = datetime.fromisoformat(datetime_str.replace('Z', '+00:00'))
         return True
     except ValueError:

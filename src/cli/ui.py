@@ -17,7 +17,7 @@ def display_task(task: Task) -> str:
     Returns:
         Formatted string representation of the task
     """
-    status_icon = "✓" if task.status.name.lower() == 'complete' else "○"
+    status_icon = "X" if task.status.name.lower() == 'complete' else "O"  # Use ASCII X and O instead of unicode
     priority_char = task.priority.name[0]  # 'H', 'M', 'L'
     tags_str = f" [{', '.join(task.tags)}]" if task.tags else ""
     due_str = f" (due: {task.due_date})" if task.due_date else ""

@@ -135,7 +135,7 @@ def get_task_details_from_user() -> tuple:
     if due_date:
         # Validate the date format
         while due_date and not validate_iso_datetime(due_date):
-            print(f"Error: Invalid ISO 8601 datetime format: {due_date}")
+            print(f"Error: Invalid date format '{due_date}'. Please use YYYY-MM-DD (e.g., 2025-12-31) or ISO datetime format.")
             due_date = get_user_input("Enter due date (YYYY-MM-DD or ISO format, optional, press Enter to skip): ")
             if not due_date:
                 break
@@ -175,7 +175,26 @@ def run_menu():
             print("16. Exit")
             print("------------------")
 
-            choice = get_valid_menu_choice()
+            # Get user input and check for global commands
+            user_input = get_user_input("\nSelect an option (1-16) or type 'help'/'quit': ").strip()
+
+            if user_input.lower() == 'help':
+                print("\n--- Help ---")
+                print("Commands available:")
+                print("- 1-16: Menu options")
+                print("- help: Show this help message")
+                print("- quit: Exit the application")
+                print("- exit: Exit the application")
+                print("- Ctrl+C: Interrupt current operation")
+                continue
+            elif user_input.lower() in ['quit', 'exit']:
+                print("Thank you for using the Todo CLI Application. Goodbye!")
+                sys.exit(0)
+            elif user_input in [str(i) for i in range(1, 17)]:
+                choice = user_input
+            else:
+                print("Invalid choice. Please select a number between 1-16, or type 'help' for assistance.")
+                continue
 
             if choice == "1":
                 view_all_tasks(task_manager)
@@ -211,8 +230,8 @@ def run_menu():
                 print("Thank you for using the Todo CLI Application. Goodbye!")
                 sys.exit(0)
         except KeyboardInterrupt:
-            print("\n\nOperation interrupted by user.")
-            sys.exit(0)
+            print("\n\nOperation interrupted by user. Returning to main menu.")
+            continue  # Return to main menu instead of exiting
         except Exception as e:
             print(f"An error occurred: {e}")
 
@@ -287,7 +306,7 @@ def update_existing_task(task_manager: TaskManager):
     if new_due_date:
         # Validate the date format
         while new_due_date and not validate_iso_datetime(new_due_date):
-            print(f"Error: Invalid ISO 8601 datetime format: {new_due_date}")
+            print(f"Error: Invalid date format '{new_due_date}'. Please use YYYY-MM-DD (e.g., 2025-12-31) or ISO datetime format.")
             new_due_date = get_user_input(f"New due date (current: '{task.due_date}'): ")
             if new_due_date == "":  # User pressed Enter to keep current value
                 new_due_date = None
