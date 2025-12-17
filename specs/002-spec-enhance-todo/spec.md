@@ -139,6 +139,44 @@ As a user with recurring responsibilities and time-sensitive tasks, I want to cr
 
 ## Requirements *(mandatory)*
 
+### User Journeys
+
+**Journey 1: Recover from Invalid Input Without Data Loss**
+- User enters data in a multi-step process (e.g., task creation)
+- User makes an error in one field (e.g., invalid date format)
+- System displays helpful error message
+- System re-prompts for the specific invalid field
+- User's previously entered valid data is preserved
+- User can complete the process without restarting
+
+**Journey 2: Retry Menu Selection After Invalid Input**
+- User is at a menu prompt (e.g., "Select an option (1-16)")
+- User enters invalid input (e.g., non-numeric, out of range)
+- System displays error message explaining valid options
+- System re-prompts for the same menu selection
+- User remains in the same menu context
+
+**Journey 3: Identify and Select Tasks Consistently**
+- User views a list of tasks with numbered display
+- User can select tasks using the displayed number
+- System accepts the number as equivalent to the internal task ID
+- User does not need to copy or remember complex UUIDs
+- System provides clear guidance on acceptable input formats
+
+**Journey 4: Cancel or Exit Workflows Safely**
+- User is in the middle of a workflow (e.g., task update)
+- User wants to return to main menu without completing the action
+- User enters explicit cancellation command (e.g., "cancel", "back", or empty input)
+- System confirms exit if data would be lost
+- User returns to main menu without errors
+
+**Journey 5: Handle Validation Errors with Clear Guidance**
+- User enters data that fails validation
+- System provides specific, actionable error message
+- System explains what format or value is expected
+- System re-prompts for the same field or action
+- User understands exactly what to correct
+
 ### Functional Requirements
 
 **Phase I Requirements:**
@@ -185,6 +223,17 @@ As a user with recurring responsibilities and time-sensitive tasks, I want to cr
 - **NFR-010**: System must provide clear, helpful error messages for all failure scenarios
 - **NFR-017**: System must reject invalid date formats with specific error message and request valid ISO 8601 format
 
+**UX & Error Handling Requirements:**
+- **NFR-019**: System MUST preserve user context during validation errors (e.g., invalid date format should not reset entire task creation process)
+- **NFR-020**: System MUST allow users to retry invalid inputs without losing previously entered valid data
+- **NFR-021**: System MUST display clear guidance on acceptable input formats when validation fails
+- **NFR-022**: System MUST accept the same identifier format that it displays for task selection (e.g., if displaying numbered list, accept numbers for selection)
+- **NFR-023**: System MUST provide consistent error messaging style throughout the application
+- **NFR-024**: System MUST only return to main menu on successful completion, explicit user cancellation, or unrecoverable system errors
+- **NFR-025**: System MUST re-prompt for invalid menu selections without returning to main menu
+- **NFR-026**: System MUST provide clear instructions on how to cancel or exit workflows safely
+- **NFR-027**: System MUST handle recoverable errors with retry-first behavior instead of workflow termination
+
 **Maintainability Requirements:**
 - **NFR-011**: System code must follow clean code principles and be well-documented
 - **NFR-012**: System must support modular updates without affecting core functionality
@@ -194,6 +243,38 @@ As a user with recurring responsibilities and time-sensitive tasks, I want to cr
 - **NFR-014**: System must not store sensitive user data without proper encryption
 - **NFR-015**: System must validate all user inputs to prevent injection attacks
 - **NFR-016**: System must provide proper error handling without exposing internal details
+
+### Global CLI UX Rules
+
+**Rule 1: Context Preservation**
+- The system must never destroy user context due to recoverable validation errors
+- All valid data entered in a workflow must be preserved through subsequent prompts
+- Return to main menu only occurs on success, explicit user cancellation, or unrecoverable system errors
+
+**Rule 2: Retry-First Behavior**
+- The system must always offer users the opportunity to retry invalid inputs
+- Users should never need to restart multi-step processes due to single field errors
+- Validation failures result in re-prompting, not workflow interruption
+
+**Rule 3: User-Friendly Error Communication**
+- All error messages must be clear, specific, and actionable
+- Technical implementation details must never be exposed to users
+- Error messages must include guidance on correct input format or procedure
+
+**Rule 4: Consistent Identifier System**
+- Task display and selection must use consistent identification methods
+- The system must accept the same format that it displays for user input
+- Users should not be required to handle internal system identifiers directly
+
+**Rule 5: Forgiving Input Handling**
+- The system must accept reasonable variations of expected input formats
+- Invalid input should result in helpful re-prompting, not workflow termination
+- Users should feel safe experimenting with input without fear of losing progress
+
+**Rule 6: Predictable Navigation**
+- Menu navigation must be consistent across all application sections
+- Users should always know how to return to main menu or previous state
+- Navigation errors should not result in data loss or workflow disruption
 
 ### Dependencies / Assumptions
 

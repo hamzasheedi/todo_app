@@ -131,6 +131,22 @@ src/
 
 ## Phase 1: Basic Implementation (Phase I)
 
+### P1-T000: UX & Error Handling Framework Implementation
+- **Objective**: Establish framework for context-preserving, retry-safe user interactions
+- **From Spec**: NFR-019 through NFR-027, User Journeys, Global CLI UX Rules
+- **Responsibilities**:
+  - **Validation Ownership**: CLI layer validates user input before passing to business logic
+  - **Retry Behavior Ownership**: CLI layer manages retry loops for each user interaction
+  - **Context Preservation Ownership**: CLI layer maintains workflow context through validation failures
+  - **Error Messaging Ownership**: CLI layer formats user-friendly error messages following consistent style
+- **Control-Flow Rules**:
+  - **Menu Input Handling**: Validation occurs at menu selection level; invalid input triggers error message and re-prompt without returning to main menu
+  - **Task Creation Flow**: Validation happens per field; failed validation preserves previously entered valid data and re-prompts for specific field only
+  - **Task Update Flow**: Validation occurs for each field update; invalid input preserves context and allows retry without losing previous selections
+  - **Task Selection/ID Resolution**: System accepts both display numbers and internal IDs; consistent identifier system prevents user confusion
+- **Acceptance**: All user interactions follow retry-first behavior with context preservation
+- **Tests**: Error handling tests, context preservation tests, retry behavior validation
+
 ### P1-T001: Core Task Entity Implementation
 - **Objective**: Implement Task entity with all specified attributes
 - **From Spec**: FR-001, FR-002, Task entity definition
@@ -343,14 +359,15 @@ src/
 ## Implementation Sequence
 
 ### Phase 1 (Basic) - Weeks 1-3
-1. P1-T001: Core Task Entity
-2. P1-T002: Task Storage
-3. P1-T003: Add Task Feature
-4. P1-T004: View Task List
-5. P1-T005: Update Task
-6. P1-T006: Mark Complete/Incomplete
-7. P1-T007: Delete Task
-8. P1-T008: CLI Interface
+1. P1-T000: UX & Error Handling Framework
+2. P1-T001: Core Task Entity
+3. P1-T002: Task Storage
+4. P1-T003: Add Task Feature
+5. P1-T004: View Task List
+6. P1-T005: Update Task
+7. P1-T006: Mark Complete/Incomplete
+8. P1-T007: Delete Task
+9. P1-T008: CLI Interface
 
 ### Phase 2 (Intermediate) - Weeks 4-5
 1. P2-T001: Priority System

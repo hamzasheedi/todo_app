@@ -1,7 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git fetch --all --prune)"
+      "Bash(git fetch --all --prune)",
+      "Bash(python -m pytest tests/test_json_storage.py -v)",
+      "Bash(python -m pytest tests/test_commands.py -v)",
+      "Bash(python -m pytest tests/test_sort.py -v)",
+      "Bash(python -m pytest tests/test_recurring_task.py -v)",
+      "Bash(python -m pytest tests/test_recurring_task_manager.py -v)",
+      "Bash(python -m pytest tests/test_reminder.py -v)",
+      "Bash(python -m pytest tests/test_reminder_manager.py -v)",
+      "Bash(python -m pytest tests/test_validators.py -v)",
+      "Bash(python -m pytest:*)"
     ]
   }
 }
