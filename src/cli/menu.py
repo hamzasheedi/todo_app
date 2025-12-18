@@ -8,6 +8,8 @@ from typing import Optional
 from cli.commands import TaskManager, get_task_manager
 from cli.ui import display_tasks, display_task, display_task_details
 from core.task import TaskPriority
+from core.recurring_task import RecurrenceRule, ContinuePolicy
+from core.reminder import ReminderStatus
 from utils.validators import validate_iso_datetime
 
 
@@ -35,12 +37,12 @@ def get_valid_menu_choice() -> str:
         The user's valid menu choice as a string
     """
     while True:
-        choice = input("\nSelect an option (1-16): ").strip()
+        choice = input("\nSelect an option (1-20): ").strip()
         if choice.lower() in ["quit", "exit"]:
-            return "16"
-        if choice in [str(i) for i in range(1, 17)]:
+            return "20"
+        if choice in [str(i) for i in range(1, 21)]:
             return choice
-        print("Invalid choice. Please select a number between 1-16.")
+        print("Invalid choice. Please select a number between 1-20.")
 
 
 def get_valid_task_id(task_manager: TaskManager, prompt: str = "Enter task ID or display number: ") -> Optional[str]:
@@ -172,16 +174,20 @@ def run_menu():
             print("13. Update task tags")
             print("14. Add tag to task")
             print("15. Remove tag from task")
-            print("16. Exit")
+            print("16. Add recurring task")
+            print("17. Add reminder")
+            print("18. View recurring tasks")
+            print("19. View reminders")
+            print("20. Exit")
             print("------------------")
 
             # Get user input and check for global commands
-            user_input = get_user_input("\nSelect an option (1-16) or type 'help'/'quit': ").strip()
+            user_input = get_user_input("\nSelect an option (1-20) or type 'help'/'quit': ").strip()
 
             if user_input.lower() == 'help':
                 print("\n--- Help ---")
                 print("Commands available:")
-                print("- 1-16: Menu options")
+                print("- 1-20: Menu options")
                 print("- help: Show this help message")
                 print("- quit: Exit the application")
                 print("- exit: Exit the application")
@@ -190,10 +196,10 @@ def run_menu():
             elif user_input.lower() in ['quit', 'exit']:
                 print("Thank you for using the Todo CLI Application. Goodbye!")
                 sys.exit(0)
-            elif user_input in [str(i) for i in range(1, 17)]:
+            elif user_input in [str(i) for i in range(1, 21)]:
                 choice = user_input
             else:
-                print("Invalid choice. Please select a number between 1-16, or type 'help' for assistance.")
+                print("Invalid choice. Please select a number between 1-20, or type 'help' for assistance.")
                 continue
 
             if choice == "1":
@@ -227,6 +233,14 @@ def run_menu():
             elif choice == "15":
                 remove_tag_from_task(task_manager)
             elif choice == "16":
+                add_recurring_task(task_manager)
+            elif choice == "17":
+                add_reminder(task_manager)
+            elif choice == "18":
+                list_recurring_tasks()
+            elif choice == "19":
+                list_reminders()
+            elif choice == "20":
                 print("Thank you for using the Todo CLI Application. Goodbye!")
                 sys.exit(0)
         except KeyboardInterrupt:
@@ -692,6 +706,136 @@ def sort_tasks_menu(task_manager: TaskManager):
     else:
         print(f"\n--- Sorted Tasks ({len(sorted_tasks)} total) ---")
         display_tasks(sorted_tasks)
+
+
+def add_recurring_task(task_manager: TaskManager):
+    """Add a recurring task."""
+    print("\n--- Add Recurring Task ---")
+
+    # Get task details from user
+    title, description, priority, tags, due_date = get_task_details_from_user()
+
+    # Get recurrence rule
+    print("\nSelect recurrence rule:")
+    print("1. Daily")
+    print("2. Weekly")
+    print("3. Monthly")
+    print("4. Yearly")
+
+    recurrence_choice = get_user_input("Enter choice (1-4): ")
+    recurrence_map = {"1": "daily", "2": "weekly", "3": "monthly", "4": "yearly"}
+    recurrence_rule = recurrence_map.get(recurrence_choice, "daily")
+
+    # Get next occurrence
+    next_occurrence = get_user_input("Enter next occurrence (YYYY-MM-DD or ISO format): ")
+    if next_occurrence and not validate_iso_datetime(next_occurrence):
+        print(f"Error: Invalid date format '{next_occurrence}'. Please use YYYY-MM-DD (e.g., 2025-12-31) or ISO datetime format.")
+        next_occurrence = get_user_input("Enter next occurrence (YYYY-MM-DD or ISO format): ")
+
+    # Get end date (optional)
+    end_date = get_user_input("Enter end date (YYYY-MM-DD or ISO format, optional): ")
+    if end_date and not validate_iso_datetime(end_date):
+        print(f"Error: Invalid date format '{end_date}'. Please use YYYY-MM-DD (e.g., 2025-12-31) or ISO datetime format.")
+        end_date = get_user_input("Enter end date (YYYY-MM-DD or ISO format, optional): ")
+    if not end_date:
+        end_date = None
+
+    # Get continuation policy
+    print("\nSelect continuation policy after completion:")
+    print("1. Always continue")
+    print("2. Prompt user")
+    print("3. Stop if completed")
+
+    continue_choice = get_user_input("Enter choice (1-3): ")
+    continue_map = {"1": "always_continue", "2": "prompt_user", "3": "stop_if_completed"}
+    continue_policy = continue_map.get(continue_choice, "always_continue")
+
+    try:
+        # Create recurring task using the command function
+        from cli.commands import create_recurring_task_from_user_input, add_recurring_task_to_storage
+        recurring_task = create_recurring_task_from_user_input(
+            title=title,
+            description=description,
+            priority=priority,
+            tags=tags,
+            due_date=due_date,
+            recurrence_rule=recurrence_rule,
+            next_occurrence=next_occurrence,
+            end_date=end_date,
+            continue_after_completion=continue_policy
+        )
+
+        if recurring_task:
+            # In a complete implementation, we would save this to persistent storage
+            add_recurring_task_to_storage(recurring_task)
+            print(f"\nRecurring task '{recurring_task.base_task.title}' added successfully!")
+            print(f"Recurrence rule: {recurring_task.recurrence_rule.value}")
+            print(f"Next occurrence: {recurring_task.next_occurrence}")
+        else:
+            print("Failed to create recurring task.")
+    except Exception as e:
+        print(f"Error creating recurring task: {e}")
+
+
+def add_reminder(task_manager: TaskManager):
+    """Add a reminder for a task."""
+    print("\n--- Add Reminder ---")
+
+    # Get task ID
+    task_id = get_valid_task_id(task_manager, "Enter task ID or display number to add reminder for: ")
+    if not task_id:
+        return
+
+    # Get reminder time
+    reminder_time = get_user_input("Enter reminder time (YYYY-MM-DD or ISO format): ")
+    if not validate_iso_datetime(reminder_time):
+        print(f"Error: Invalid date format '{reminder_time}'. Please use YYYY-MM-DD (e.g., 2025-12-31) or ISO datetime format.")
+        reminder_time = get_user_input("Enter reminder time (YYYY-MM-DD or ISO format): ")
+
+    try:
+        # Create reminder using the command function
+        from cli.commands import create_reminder_from_user_input, add_reminder_to_storage
+        reminder = create_reminder_from_user_input(task_id, reminder_time)
+
+        if reminder:
+            # In a complete implementation, we would save this to persistent storage
+            add_reminder_to_storage(reminder)
+            print(f"\nReminder added successfully for task {task_id}!")
+            print(f"Reminder time: {reminder.reminder_time}")
+            print(f"Status: {reminder.status}")
+        else:
+            print("Failed to create reminder.")
+    except Exception as e:
+        print(f"Error creating reminder: {e}")
+
+
+def list_recurring_tasks():
+    """List all recurring tasks."""
+    print("\n--- Recurring Tasks ---")
+    from cli.commands import list_recurring_tasks as get_recurring_tasks
+    recurring_tasks = get_recurring_tasks()
+
+    if not recurring_tasks:
+        print("No recurring tasks found.")
+    else:
+        for i, rt in enumerate(recurring_tasks, 1):
+            status = "Active" if rt.is_active else "Inactive"
+            print(f"{i}. {rt.base_task.title} - {rt.recurrence_rule.value} - Next: {rt.next_occurrence} - {status}")
+        print(f"\nTotal recurring tasks: {len(recurring_tasks)}")
+
+
+def list_reminders():
+    """List all reminders."""
+    print("\n--- Reminders ---")
+    from cli.commands import list_reminders as get_reminders
+    reminders = get_reminders()
+
+    if not reminders:
+        print("No reminders found.")
+    else:
+        for i, r in enumerate(reminders, 1):
+            print(f"{i}. Task {r.task_id} - {r.reminder_time} - Status: {r.status}")
+        print(f"\nTotal reminders: {len(reminders)}")
 
 
 if __name__ == "__main__":

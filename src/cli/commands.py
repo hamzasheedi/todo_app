@@ -879,3 +879,162 @@ def create_reminder(task_id: str, reminder_time: str) -> Optional['Reminder']:
     # In a real implementation, we would save this to a reminders storage
     # For now, we'll just return the object
     return reminder
+
+
+# Additional functions for recurring task and reminder management
+def create_recurring_task_from_user_input(title: str, description: Optional[str] = None,
+                                         priority: Optional[str] = None, tags: Optional[List[str]] = None,
+                                         due_date: Optional[str] = None, recurrence_rule: str = 'daily',
+                                         next_occurrence: Optional[str] = None, end_date: Optional[str] = None,
+                                         continue_after_completion: Optional[str] = 'always_continue') -> Optional['RecurringTask']:
+    """
+    Create a new recurring task with validation and error handling.
+    """
+    try:
+        return create_recurring_task(title, description, priority, tags, due_date,
+                                   recurrence_rule, next_occurrence, end_date, continue_after_completion)
+    except ValueError as e:
+        print(f"Error creating recurring task: {e}")
+        return None
+
+
+def create_reminder_from_user_input(task_id: str, reminder_time: str) -> Optional['Reminder']:
+    """
+    Create a new reminder with validation and error handling.
+    """
+    try:
+        return create_reminder(task_id, reminder_time)
+    except ValueError as e:
+        print(f"Error creating reminder: {e}")
+        return None
+
+
+# Advanced storage for recurring tasks and reminders
+def get_advanced_storage():
+    """
+    Get an advanced storage instance that handles tasks, recurring tasks, and reminders.
+    """
+    from storage.advanced_storage import AdvancedJSONStorage
+    return AdvancedJSONStorage()
+
+
+def get_recurring_task_manager():
+    """
+    Get a recurring task manager instance with loaded data from storage.
+    """
+    from core.recurring_task import RecurringTaskManager
+    manager = RecurringTaskManager()
+
+    # Load existing recurring tasks from storage
+    storage = get_advanced_storage()
+    recurring_tasks = storage.load_recurring_tasks()
+    for rt in recurring_tasks:
+        manager.add_recurring_task(rt)
+
+    return manager
+
+
+def get_reminder_manager():
+    """
+    Get a reminder manager instance with loaded data from storage.
+    """
+    from core.reminder import ReminderManager
+    manager = ReminderManager()
+
+    # Load existing reminders from storage
+    storage = get_advanced_storage()
+    reminders = storage.load_reminders()
+    for r in reminders:
+        manager.add_reminder(r)
+
+    return manager
+
+
+def list_recurring_tasks() -> list:
+    """
+    Get all recurring tasks from storage.
+    """
+    storage = get_advanced_storage()
+    return storage.load_recurring_tasks()
+
+
+def list_reminders() -> list:
+    """
+    Get all reminders from storage.
+    """
+    storage = get_advanced_storage()
+    return storage.load_reminders()
+
+
+def add_recurring_task_to_storage(recurring_task) -> bool:
+    """
+    Add a recurring task to persistent storage.
+    """
+    storage = get_advanced_storage()
+    try:
+        storage.add_recurring_task(recurring_task)
+        return True
+    except Exception as e:
+        print(f"Error saving recurring task to storage: {e}")
+        return False
+
+
+def add_reminder_to_storage(reminder) -> bool:
+    """
+    Add a reminder to persistent storage.
+    """
+    storage = get_advanced_storage()
+    try:
+        storage.add_reminder(reminder)
+        return True
+    except Exception as e:
+        print(f"Error saving reminder to storage: {e}")
+        return False
+
+
+def update_recurring_task_in_storage(recurring_task_id: str, updated_task) -> bool:
+    """
+    Update a recurring task in persistent storage.
+    """
+    storage = get_advanced_storage()
+    try:
+        return storage.update_recurring_task(recurring_task_id, updated_task)
+    except Exception as e:
+        print(f"Error updating recurring task in storage: {e}")
+        return False
+
+
+def update_reminder_in_storage(reminder_id: str, updated_reminder) -> bool:
+    """
+    Update a reminder in persistent storage.
+    """
+    storage = get_advanced_storage()
+    try:
+        return storage.update_reminder(reminder_id, updated_reminder)
+    except Exception as e:
+        print(f"Error updating reminder in storage: {e}")
+        return False
+
+
+def delete_recurring_task_from_storage(recurring_task_id: str) -> bool:
+    """
+    Delete a recurring task from persistent storage.
+    """
+    storage = get_advanced_storage()
+    try:
+        return storage.delete_recurring_task(recurring_task_id)
+    except Exception as e:
+        print(f"Error deleting recurring task from storage: {e}")
+        return False
+
+
+def delete_reminder_from_storage(reminder_id: str) -> bool:
+    """
+    Delete a reminder from persistent storage.
+    """
+    storage = get_advanced_storage()
+    try:
+        return storage.delete_reminder(reminder_id)
+    except Exception as e:
+        print(f"Error deleting reminder from storage: {e}")
+        return False
