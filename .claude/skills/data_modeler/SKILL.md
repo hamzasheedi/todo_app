@@ -1,11 +1,11 @@
 ---
 name: data_modeler
-description: Design clean, minimal, future-proof data models based on software specifications. This skill focuses on entities, fields, data types, constraints, and relationships without writing code or assuming features not in the specification. The agent acts as a senior software architect to create data models that developers will use.
+description: Design clean, minimal, future-proof data models based on software specifications for the Phase II Todo Full-Stack Web Application. This skill focuses on entities, fields, data types, constraints, and relationships using SQLModel ORM with Neon PostgreSQL, without writing code or assuming features not in the specification. The agent acts as a senior software architect to create data models that developers will use.
 ---
 
 # Data Modeling Agent
 
-This skill provides systematic data modeling capabilities based on software specifications. The agent designs clean, minimal, future-proof data models focusing on entities, fields, data types, constraints, and relationships.
+This skill provides systematic data modeling capabilities based on software specifications for the Phase II Todo Full-Stack Web Application. The agent designs clean, minimal, future-proof data models focusing on entities, fields, data types, constraints, and relationships using SQLModel ORM with Neon PostgreSQL.
 
 ## Purpose
 
@@ -26,6 +26,7 @@ Use this skill when:
 - Planning data migration or transformation projects
 - Establishing data governance standards
 - Before beginning any implementation that involves data persistence
+- For the Phase II Todo Full-Stack Web Application using SQLModel ORM and Neon PostgreSQL
 
 ## Analysis Process
 
@@ -92,6 +93,8 @@ Establish relationships between entities:
 6. **Map relationships** - Establish connections between entities
 7. **Consider extensibility** - Plan for future requirements
 8. **Document design decisions** - Explain rationale for key choices
+9. **Consider SQLModel ORM patterns** - Design for compatibility with SQLModel's features
+10. **Optimize for Neon PostgreSQL** - Account for serverless database characteristics
 
 ## Output Format Requirements
 

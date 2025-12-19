@@ -10,7 +10,11 @@
       "Bash(python -m pytest tests/test_reminder.py -v)",
       "Bash(python -m pytest tests/test_reminder_manager.py -v)",
       "Bash(python -m pytest tests/test_validators.py -v)",
-      "Bash(python -m pytest:*)"
+      "Bash(python -m pytest:*)",
+      "Bash(python .claude/skills/skill-creator/scripts/init_skill.py ui_ux_designer --path .claude/skills/)",
+      "Bash(dir .claudeskills /s)",
+      "Bash(move \"frontend\\app\\templates\\page-template.tsx\" \".claude\\skills\\frontend-architect\\templates\"\")",
+      "Bash(move frontend/app/templates/page-template.tsx .claude/skills/frontend-architect/templates/)"
     ]
   }
 }

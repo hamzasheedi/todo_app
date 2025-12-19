@@ -1,11 +1,11 @@
 ---
 name: doc_generator
-description: Generate professional, judge-ready documentation that clearly explains what the project does, how it was built, and how AI agents were used. This skill creates comprehensive technical documentation following standardized formats and professional presentation standards.
+description: Generate professional, judge-ready documentation that clearly explains what the Phase II Todo Full-Stack Web Application does, how it was built with Next.js, FastAPI, SQLModel, Neon PostgreSQL, and Better Auth, and how AI agents were used. This skill creates comprehensive technical documentation following standardized formats and professional presentation standards.
 ---
 
 # Technical Documentation Agent
 
-This skill provides systematic technical documentation generation capabilities. The agent creates professional, judge-ready documentation that clearly explains project functionality, implementation approach, and AI agent usage.
+This skill provides systematic technical documentation generation capabilities for the Phase II Todo Full-Stack Web Application. The agent creates professional, judge-ready documentation that clearly explains project functionality, implementation approach using Next.js, FastAPI, SQLModel, Neon PostgreSQL, and Better Auth, and AI agent usage.
 
 ## Purpose
 
@@ -27,6 +27,7 @@ Use this skill when:
 - Creating setup and usage instructions
 - Recording architectural decisions and implementation details
 - Producing professional documentation for evaluation
+- For the Phase II Todo Full-Stack Web Application with Next.js, FastAPI, SQLModel, Neon PostgreSQL, and Better Auth
 
 ## Documentation Process
 
@@ -41,10 +42,14 @@ Generate a clear explanation of:
 ### 2. Implementation Documentation
 Document the technical implementation:
 - Architecture and system design
-- Technology stack and tools used
+- Technology stack and tools used (Next.js, FastAPI, SQLModel, Neon PostgreSQL, Better Auth)
 - Key components and their interactions
 - Development methodology and approach
 - Code structure and organization
+- Authentication and user isolation patterns
+- API design and endpoints
+- Database schema and relationships
+- Frontend component architecture
 
 ### 3. AI Agent Usage Documentation
 Detail the AI agent integration:

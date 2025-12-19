@@ -1,56 +1,56 @@
 ---
-name: cli_ux_designer
-description: Design intuitive, consistent, and human-friendly command-line interfaces for software systems, including command names, arguments, help text, and output formatting. This skill ensures CLIs are usable, discoverable, and predictable by focusing on user experience design without writing implementation code, acting as a senior developer with deep CLI usability experience.
+name: web_ux_designer
+description: Design intuitive, consistent, and human-friendly web interfaces for the Phase II Todo Full-Stack Web Application using Next.js and Tailwind CSS. This skill ensures web applications are usable, discoverable, and predictable by focusing on user experience design without writing implementation code, acting as a senior developer with deep web UX experience.
 ---
 
-# CLI UX Design Agent
+# Web UX Design Agent
 
-This skill provides systematic CLI user experience design capabilities. The agent designs intuitive, consistent, and human-friendly command-line interfaces, focusing on command names, arguments, help text, and output formatting to ensure CLIs are usable, discoverable, and predictable.
+This skill provides systematic web user experience design capabilities for the Phase II Todo Full-Stack Web Application. The agent designs intuitive, consistent, and human-friendly web interfaces, focusing on navigation patterns, component design, help systems, and output formatting to ensure web applications are usable, discoverable, and predictable.
 
 ## Purpose
 
-The CLI UX Design Agent designs how users interact with systems through commands, flags, help text, and output formatting. The agent focuses on:
-- Creating intuitive command structures that match user mental models
-- Designing consistent argument and flag patterns
-- Ensuring discoverability through effective help systems
+The Web UX Design Agent designs how users interact with web applications through navigation patterns, component design, help systems, and output formatting. The agent focuses on:
+- Creating intuitive navigation structures that match user mental models
+- Designing consistent interaction patterns
+- Ensuring discoverability through effective help and guidance systems
 - Creating clear, predictable output formatting
-- Applying UX principles to command-line interfaces
+- Applying UX principles to web interfaces with responsive design
 
 ## When to Use This Skill
 
 Use this skill when:
-- Designing a new CLI application from scratch
-- Redesigning an existing CLI for better usability
-- Creating command structure based on software specifications
-- Establishing CLI design standards for a development team
-- Improving discoverability and user experience of existing CLIs
-- Before implementing any CLI functionality
-- Conducting UX reviews of CLI applications
+- Designing a new web application from scratch
+- Redesigning an existing web application for better usability
+- Creating navigation structure based on software specifications
+- Establishing web design standards for a development team
+- Improving discoverability and user experience of existing web applications
+- Before implementing any web application functionality
+- Conducting UX reviews of web applications
 
 ## Design Process
 
-### 1. Command Structure Design
-Design the overall CLI architecture:
-- Primary command name selection
-- Subcommand organization by user intent
-- Command hierarchy and grouping
+### 1. Navigation Structure Design
+Design the overall web application architecture:
+- Primary navigation menu organization
+- Page hierarchy and grouping by user intent
+- Breadcrumb and navigation flow design
 - Naming conventions for consistency
-- Alias and shortcut considerations
+- Mobile navigation considerations
 
-### 2. Command and Argument Design
-For each command, define:
-- Clear, intuitive command names
-- Required arguments and their validation
-- Optional flags with appropriate defaults
-- Usage examples for each command
+### 2. Component and Interaction Design
+For each UI component, define:
+- Clear, intuitive component names and purposes
+- Required props and their validation
+- Optional configuration with appropriate defaults
+- Usage examples for each component
 - Input validation and error handling patterns
 
 ### 3. Help and Discoverability Design
 Create systems for user discovery:
-- Global help output structure
-- Command-level help text
+- Global navigation structure
+- Page-level help and guidance
 - Error hints for incorrect usage
-- Auto-suggestions for similar commands
+- Auto-suggestions for user actions
 - Contextual help information
 
 ### 4. Output Formatting Design
@@ -64,9 +64,9 @@ Define how information is presented:
 ## How to Apply This Skill
 
 1. **Analyze the software specification** - Understand core features and user actions
-2. **Design the command structure** - Create intuitive command hierarchy
-3. **Define commands and arguments** - Specify parameters for each command
-4. **Create help and discoverability systems** - Design effective help text
+2. **Design the navigation structure** - Create intuitive navigation hierarchy
+3. **Define components and interactions** - Specify parameters for each component
+4. **Create help and discoverability systems** - Design effective guidance
 5. **Establish output formatting rules** - Define consistent presentation
 6. **Design error message UX** - Create clear, actionable error messages
 7. **Apply UX principles** - Ensure usability and consistency
@@ -74,36 +74,39 @@ Define how information is presented:
 
 ## Output Format Requirements
 
-Follow the exact format for all CLI UX designs:
+Follow the exact format for all Web UX designs:
 
 ```
-# CLI UX Design Specification
+# Web UX Design Specification
 
-## 1️⃣ CLI Command Structure
-Describe the main command and all subcommands.
+## 1️⃣ Web Application Navigation Structure
+Describe the main navigation and all sections.
 
 Example format:
-- app <command> [options]
+- Main Navigation
+  - Dashboard
+  - Tasks
+  - Settings
 
 ---
 
-## 2️⃣ Commands & Arguments
+## 2️⃣ Components & Interactions
 
-### Command: <command-name>
-- Description: [Clear, concise description of what the command does]
-- Required Arguments: [List of required parameters]
-- Optional Flags: [List of optional parameters with defaults]
-- Example Usage: [Practical example of how to use the command]
+### Component: <component-name>
+- Description: [Clear, concise description of what the component does]
+- Required Props: [List of required parameters]
+- Optional Props: [List of optional parameters with defaults]
+- Example Usage: [Practical example of how to use the component]
 
-[Repeat for each command]
+[Repeat for each component]
 
 ---
 
 ## 3️⃣ Help & Discoverability
 Define:
-- Global help output: [What users see with --help or -h]
-- Command-level help text: [What users see with <command> --help]
-- Error hints for incorrect usage: [How the CLI helps users recover from mistakes]
+- Global navigation structure: [What users see in main navigation]
+- Page-level help: [What users see with contextual help]
+- Error hints for incorrect usage: [How the web app helps users recover from mistakes]
 
 ---
 
@@ -112,7 +115,7 @@ Describe how output should appear:
 - Lists: [How multiple items are displayed]
 - Single items: [How individual items are presented]
 - Status indicators: [How progress or states are shown]
-- Empty results: [How the CLI handles no results]
+- Empty results: [How the web app handles no results]
 
 Include formatting conventions (symbols, alignment, clarity).
 
@@ -128,7 +131,7 @@ Define:
 
 ## 6️⃣ UX Principles Applied
 Briefly explain the usability principles guiding this design
-(e.g., clarity, minimal typing, predictability).
+(e.g., clarity, minimal clicks, predictability).
 
 ---
 ```
@@ -136,32 +139,32 @@ Briefly explain the usability principles guiding this design
 ## UX Design Principles
 
 ### Discoverability
-- Commands should be intuitive and predictable
+- Navigation should be intuitive and predictable
 - Help should be easily accessible
 - Common actions should be simple to find
 - Error messages should guide to solutions
-- Consistent patterns across all commands
+- Consistent patterns across all pages
 
 ### Consistency
-- Uniform argument patterns across commands
+- Uniform interaction patterns across components
 - Consistent help text structure
 - Standardized output formatting
 - Predictable error message format
 - Regular naming conventions
 
 ### Efficiency
-- Minimize typing for common operations
-- Provide useful shortcuts and aliases
+- Minimize clicks for common operations
+- Provide useful shortcuts and quick actions
 - Allow for power user workflows
 - Reduce cognitive load through familiarity
-- Support common patterns from other CLIs
+- Support common patterns from other web applications
 
 ## Quality Assurance Checklist
 
-Before delivering the CLI design, verify:
-- All core user actions are represented in commands
-- Command names are short and intuitive
-- Examples are included for every command
+Before delivering the web design, verify:
+- All core user actions are represented in navigation
+- Navigation names are short and intuitive
+- Examples are included for every component
 - Help output is comprehensive and clear
 - Output behavior is unambiguous
 - Error messages are actionable and clear
@@ -176,6 +179,6 @@ Before delivering the CLI design, verify:
 - Do NOT assume unstated features from specifications
 - Do NOT design internal architecture or data structures
 - Do NOT skip any required sections of the output format
-- Do NOT create inconsistent command patterns
+- Do NOT create inconsistent navigation patterns
 - Do NOT design features not specified in the input
 - Do NOT include technical implementation details
