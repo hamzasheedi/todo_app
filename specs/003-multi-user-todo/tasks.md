@@ -25,13 +25,13 @@ Establish project structure, dependencies, and foundational configuration per im
 - Basic project structure matches plan
 
 ### Tasks
-- [ ] T001 Create project directory structure with src/, backend/, frontend/ directories
-- [ ] T002 Set up Next.js 16+ project with TypeScript and Tailwind CSS in frontend/ directory
-- [ ] T003 Set up FastAPI project with SQLModel in backend/ directory
-- [ ] T004 Create initial requirements.txt for backend with FastAPI, SQLModel, Better Auth dependencies
-- [ ] T005 Create initial package.json for frontend with Next.js, TypeScript, Tailwind dependencies
-- [ ] T006 Configure .gitignore with proper exclusions for both frontend and backend
-- [ ] T007 Set up environment configuration files (.env.example) with required variables per plan
+- [X] T001 Create project directory structure with src/, backend/, frontend/ directories
+- [X] T002 Set up Next.js 16+ project with TypeScript and Tailwind CSS in frontend/ directory
+- [X] T003 Set up FastAPI project with SQLModel in backend/ directory
+- [X] T004 Create initial requirements.txt for backend with FastAPI, SQLModel, Better Auth dependencies
+- [X] T005 Create initial package.json for frontend with Next.js, TypeScript, Tailwind dependencies
+- [X] T006 Configure .gitignore with proper exclusions for both frontend and backend
+- [X] T007 Set up environment configuration files (.env.example) with required variables per plan
 
 ## Phase 2: Foundational Components
 
@@ -45,15 +45,15 @@ Implement authentication system, database models, and API infrastructure require
 - Basic API structure in place
 
 ### Tasks
-- [ ] T008 [P] Install and configure Better Auth for Next.js in frontend
-- [ ] T009 [P] Create User and Task SQLModel models in backend/models/
-- [ ] T010 [P] Create Pydantic schemas for User and Task in backend/schemas/
-- [ ] T011 [P] Set up Neon PostgreSQL database connection in backend/database/
-- [ ] T012 [P] Implement JWT verification middleware in backend/auth/
-- [ ] T013 [P] Create centralized API client in frontend/lib/api-client.ts
-- [ ] T014 [P] Implement database session management in backend/database/
-- [ ] T015 [P] Create database migration setup in backend/database/migrations.py
-- [ ] T016 [P] Implement user_id validation utility in backend/utils/validation.py
+- [X] T008 [P] Install and configure Better Auth for Next.js in frontend
+- [X] T009 [P] Create User and Task SQLModel models in backend/models/
+- [X] T010 [P] Create Pydantic schemas for User and Task in backend/schemas/
+- [X] T011 [P] Set up Neon PostgreSQL database connection in backend/database/
+- [X] T012 [P] Implement JWT verification middleware in backend/auth/
+- [X] T013 [P] Create centralized API client in frontend/lib/api-client.ts
+- [X] T014 [P] Implement database session management in backend/database/
+- [X] T015 [P] Create database migration setup in backend/database/migrations.py
+- [X] T016 [P] Implement user_id validation utility in backend/utils/validation.py
 
 ## Phase 3: [US1] User Authentication and Task Management
 
