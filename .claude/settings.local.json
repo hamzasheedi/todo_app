@@ -14,7 +14,17 @@
       "Bash(python .claude/skills/skill-creator/scripts/init_skill.py ui_ux_designer --path .claude/skills/)",
       "Bash(dir .claudeskills /s)",
       "Bash(move \"frontend\\app\\templates\\page-template.tsx\" \".claude\\skills\\frontend-architect\\templates\"\")",
-      "Bash(move frontend/app/templates/page-template.tsx .claude/skills/frontend-architect/templates/)"
+      "Bash(move frontend/app/templates/page-template.tsx .claude/skills/frontend-architect/templates/)",
+      "Bash(python -m uvicorn backend.main:app --port 8000)",
+      "Bash(dir \"C:\\Users\\Hamza\\Desktop\\todo_app\\frontend\\app\" /s)",
+      "Bash(dir \"C:\\Users\\Hamza\\Desktop\\todo_app\\frontend\\app\\auth\")",
+      "Bash(python -m uvicorn main:app --reload --port 8000)",
+      "Bash(echo \"from .user import User\nfrom .task import Task\n\n__all__ = [''User'', ''Task'']\")",
+      "Bash(python -m pytest tests/test_backend_integration.py -v)",
+      "Bash(powershell \"Get-ChildItem -Path backend -Recurse | Where-Object { $_Name -match ''migrat|alembic|version'' }\")",
+      "Bash(dir backend)",
+      "Bash(dir backend /s)",
+      "Bash(powershell \"Get-ChildItem -Path backend -Recurse\")"
     ]
   }
 }

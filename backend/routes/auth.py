@@ -1,86 +1,136 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from typing import Optional
-from ..database.database import SessionLocal
-from ..models.user import User
-from ..schemas.user import UserCreate, UserRead
-from ..auth.jwt import SECRET_KEY, ALGORITHM
-from jose import jwt
-from datetime import datetime, timedelta
 import uuid
-from passlib.context import CryptContext
+from pydantic import BaseModel
 
-# Initialize password hashing context
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Handle relative imports for different execution contexts
+try:
+    from ..database.database import SessionLocal
+    from ..models.user import User
+    from ..schemas.user import UserCreate, UserRead
+    from ..auth.jwt import get_current_user
+    from ..auth.backend_jwt import create_backend_jwt, get_current_user_from_backend_jwt
+except ImportError:
+    # Direct imports for test environments
+    from database.database import SessionLocal
+    from models.user import User
+    from schemas.user import UserCreate, UserRead
+    from auth.jwt import get_current_user
+    from auth.backend_jwt import create_backend_jwt, get_current_user_from_backend_jwt
 
 # Create router
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a plain password against a hashed password"""
-    return pwd_context.verify(plain_password, hashed_password)
+@router.get("/me")
+def get_authenticated_user(current_user: User = Depends(get_current_user_from_backend_jwt)):
+    """Get the authenticated user's information including backend ID"""
+    return {
+        "id": str(current_user.id),  # Backend UUID
+        "email": current_user.email,
+        "better_auth_id": current_user.better_auth_id,  # Better Auth ID if available
+        "created_date": current_user.created_date,
+        "updated_date": current_user.updated_date
+    }
 
-def get_password_hash(password: str) -> str:
-    """Hash a plain password"""
-    return pwd_context.hash(password)
+from pydantic import BaseModel
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    """Create a JWT access token"""
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)  # Default 15 minutes
+class SyncUserRequest(BaseModel):
+    better_auth_id: str
+    email: str
 
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
+@router.post("/sync-user")
+def sync_user_with_backend(
+    sync_data: SyncUserRequest,
+    session: Session = Depends(SessionLocal)
+):
+    """Sync a Better Auth user with the backend database and return backend JWT"""
+    better_auth_id = sync_data.better_auth_id
+    email = sync_data.email
 
-@router.post("/signup", response_model=UserRead)
-def register_user(user_data: UserCreate, session: Session = Depends(SessionLocal)):
-    """Register a new user"""
-    # Check if user already exists
-    existing_user = session.exec(select(User).where(User.email == user_data.email)).first()
+    if not better_auth_id or not email:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="better_auth_id and email are required"
+        )
+
+    # Check if user already exists with this Better Auth ID
+    existing_user = session.exec(select(User).where(User.better_auth_id == better_auth_id)).first()
+
     if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Email already registered"
-        )
+        # User already exists, return existing user with backend JWT
+        backend_token = create_backend_jwt(str(existing_user.id), existing_user.email, existing_user.better_auth_id)
+        return {
+            "id": str(existing_user.id),
+            "email": existing_user.email,
+            "better_auth_id": existing_user.better_auth_id,
+            "backend_token": backend_token,  # Add backend JWT for API calls
+            "message": "User already exists"
+        }
 
-    # Hash the password
-    hashed_password = get_password_hash(user_data.password)
+    # Check if user exists with this email but no Better Auth ID
+    existing_user_by_email = session.exec(select(User).where(
+        User.email == email
+    )).first()
 
-    # Create new user with hashed password
-    db_user = User(
-        email=user_data.email,
-        hashed_password=hashed_password
+    if existing_user_by_email:
+        # Update existing user with Better Auth ID
+        existing_user_by_email.better_auth_id = better_auth_id
+        from datetime import datetime
+        existing_user_by_email.updated_date = datetime.utcnow()  # Update the timestamp
+        session.add(existing_user_by_email)
+        session.commit()
+        session.refresh(existing_user_by_email)
+
+        backend_token = create_backend_jwt(str(existing_user_by_email.id), existing_user_by_email.email, existing_user_by_email.better_auth_id)
+        return {
+            "id": str(existing_user_by_email.id),
+            "email": existing_user_by_email.email,
+            "better_auth_id": existing_user_by_email.better_auth_id,
+            "backend_token": backend_token,  # Add backend JWT for API calls
+            "message": "User updated with Better Auth ID"
+        }
+
+    import uuid
+    from datetime import datetime
+    # Create new user with Better Auth ID and set all required fields manually
+    new_user = User(
+        id=uuid.uuid4(),
+        email=email,
+        better_auth_id=better_auth_id,
+        created_date=datetime.utcnow(),
+        updated_date=datetime.utcnow()
     )
 
-    session.add(db_user)
+    session.add(new_user)
     session.commit()
-    session.refresh(db_user)
+    session.refresh(new_user)
 
-    return db_user
+    backend_token = create_backend_jwt(str(new_user.id), new_user.email, new_user.better_auth_id)
+    return {
+        "id": str(new_user.id),
+        "email": new_user.email,
+        "better_auth_id": new_user.better_auth_id,
+        "backend_token": backend_token,  # Add backend JWT for API calls
+        "message": "User created successfully"
+    }
 
-@router.post("/signin")
-def login_user(user_data: UserCreate, session: Session = Depends(SessionLocal)):
-    """Login a user and return JWT token"""
-    # Find user by email
-    user = session.exec(select(User).where(User.email == user_data.email)).first()
-    if not user or not verify_password(user_data.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    # Create access token
-    access_token_expires = timedelta(minutes=30)  # 30 minutes
-    access_token = create_access_token(
-        data={"sub": str(user.id)}, expires_delta=access_token_expires
+@router.post("/get-backend-token")
+def get_backend_token(
+    session: Session = Depends(SessionLocal)
+):
+    """
+    Get a backend-specific JWT after user has been synced
+    This endpoint should be called after successful user sync
+    """
+    # Since this endpoint will be called after sync, we can't verify the original token
+    # Instead, we'll require the client to send user identification that was established during sync
+    # For security, we'll implement this as a separate flow that requires user verification through sync first
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail="This endpoint requires special implementation for secure token exchange"
     )
 
-    return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post("/signout")
 def logout_user():

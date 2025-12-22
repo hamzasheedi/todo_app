@@ -18,10 +18,11 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
-      router.push('/tasks'); // Redirect to tasks page after login
+      // Navigate to tasks page after successful login
+      router.push('/tasks');
       router.refresh();
-    } catch (err) {
-      setError('Invalid email or password. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'Invalid email or password. Please try again.');
       console.error('Login error:', err);
     }
   };

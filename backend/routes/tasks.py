@@ -2,12 +2,23 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlmodel import Session, select
 from typing import List, Optional
 import uuid
-from ..database.database import SessionLocal
-from ..models.user import User
-from ..models.task import Task
-from ..schemas.task import TaskRead, TaskCreate, TaskUpdate, TaskComplete
-from ..auth.jwt import get_current_user
-from ..utils.validation import validate_uuid, validate_user_id_match, validate_task_ownership
+
+# Handle relative imports for different execution contexts
+try:
+    from ..database.database import SessionLocal
+    from ..models.user import User
+    from ..models.task import Task
+    from ..schemas.task import TaskRead, TaskCreate, TaskUpdate, TaskComplete
+    from ..auth.jwt import get_current_user
+    from ..utils.validation import validate_uuid, validate_user_id_match, validate_task_ownership
+except ImportError:
+    # Direct imports for test environments
+    from database.database import SessionLocal
+    from models.user import User
+    from models.task import Task
+    from schemas.task import TaskRead, TaskCreate, TaskUpdate, TaskComplete
+    from auth.jwt import get_current_user
+    from utils.validation import validate_uuid, validate_user_id_match, validate_task_ownership
 
 # Create router with user_id in the path
 router = APIRouter(tags=["tasks"])

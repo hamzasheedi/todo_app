@@ -17,10 +17,10 @@ type Task = {
 
 type TaskFormProps = {
   onTaskCreated: (task: Task) => void;
+  backendUserId?: string; // Backend user ID to use in API calls
 };
 
-export default function TaskForm({ onTaskCreated }: TaskFormProps) {
-  const { user } = useAuth();
+export default function TaskForm({ onTaskCreated, backendUserId }: TaskFormProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
@@ -34,7 +34,7 @@ export default function TaskForm({ onTaskCreated }: TaskFormProps) {
       return;
     }
 
-    if (!user) {
+    if (!backendUserId) {
       setError('You must be logged in to create a task');
       return;
     }
@@ -43,7 +43,7 @@ export default function TaskForm({ onTaskCreated }: TaskFormProps) {
     setError('');
 
     try {
-      const response = await apiClient.post(`/api/${user.id}/tasks`, {
+      const response = await apiClient.post(`/api/${backendUserId}/tasks`, {
         title,
         description: description || null,
         status: 'incomplete'

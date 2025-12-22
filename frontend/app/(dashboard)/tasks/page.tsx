@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/AuthWrapper';
+import { useUser } from '@/contexts/UserContext';
+import { authClient } from '@/lib/auth-client';
 import { apiClient } from '@/lib/api-client';
 import TaskForm from '@/components/TaskForm';
 import TaskItem from '@/components/TaskItem';
@@ -19,26 +21,38 @@ type Task = {
 };
 
 export default function TasksPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth(); // user is guaranteed to exist due to layout protection
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortOption, setSortOption] = useState<string>('newest_first');
 
+  // Get backend user ID from the context
+  const { backendUserId, loading: contextLoading } = useUser();
+
+  // If context is still loading, show loading state
+  if (contextLoading || !backendUserId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
   // Fetch tasks from the API
   useEffect(() => {
-    if (user) {
+    if (backendUserId) {
       fetchTasks();
     }
-  }, [user, sortOption]);
+  }, [backendUserId, sortOption]);
 
   const fetchTasks = async () => {
-    if (!user) return;
+    if (!backendUserId) return;
 
     try {
       setLoading(true);
-      // The API expects user_id in the URL, so we use the current user's ID
-      const response = await apiClient.get(`/api/${user.id}/tasks?sort=${sortOption}`);
+      // Use the backend user ID in the API call
+      const response = await apiClient.get(`/api/${backendUserId}/tasks?sort=${sortOption}`);
       setTasks(response);
       setError(null);
     } catch (err) {
@@ -65,22 +79,6 @@ export default function TasksPage() {
     setSortOption(e.target.value);
   };
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Loading...</p>
-      </div>
-    );
-  }
-
-  if (!user) {
-    // Redirect to login if not authenticated
-    if (typeof window !== 'undefined') {
-      window.location.href = '/login';
-    }
-    return null;
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -102,7 +100,7 @@ export default function TasksPage() {
             </div>
           </div>
 
-          <TaskForm onTaskCreated={handleTaskCreated} />
+          <TaskForm onTaskCreated={handleTaskCreated} backendUserId={backendUserId} />
 
           {error && (
             <div className="rounded-md bg-red-50 p-4 mb-4">
@@ -126,6 +124,7 @@ export default function TasksPage() {
                   task={task}
                   onTaskUpdated={handleTaskUpdated}
                   onTaskDeleted={handleTaskDeleted}
+                  backendUserId={backendUserId}
                 />
               ))}
             </div>

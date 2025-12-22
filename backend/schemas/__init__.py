@@ -1,4 +1,4 @@
-from .user import UserRead, UserCreate
-from .task import TaskRead, TaskCreate, TaskUpdate
+from .user import UserCreate, UserRead
+from .task import TaskRead, TaskCreate, TaskUpdate, TaskComplete
 
-__all__ = ["UserRead", "UserCreate", "TaskRead", "TaskCreate", "TaskUpdate"]
+__all__ = ['UserCreate', 'UserRead', 'TaskRead', 'TaskCreate', 'TaskUpdate', 'TaskComplete']

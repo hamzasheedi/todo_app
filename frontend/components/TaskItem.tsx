@@ -19,10 +19,10 @@ type TaskItemProps = {
   task: Task;
   onTaskUpdated: (task: Task) => void;
   onTaskDeleted: (taskId: string) => void;
+  backendUserId?: string; // Backend user ID to use in API calls
 };
 
-export default function TaskItem({ task, onTaskUpdated, onTaskDeleted }: TaskItemProps) {
-  const { user } = useAuth();
+export default function TaskItem({ task, onTaskUpdated, onTaskDeleted, backendUserId }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description || '');
@@ -32,13 +32,13 @@ export default function TaskItem({ task, onTaskUpdated, onTaskDeleted }: TaskIte
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!backendUserId) return;
 
     setLoading(true);
     setError('');
 
     try {
-      const response = await apiClient.put(`/api/${user.id}/tasks/${task.id}`, {
+      const response = await apiClient.put(`/api/${backendUserId}/tasks/${task.id}`, {
         title,
         description: description || null,
         status
@@ -55,11 +55,11 @@ export default function TaskItem({ task, onTaskUpdated, onTaskDeleted }: TaskIte
   };
 
   const handleDelete = async () => {
-    if (!user) return;
+    if (!backendUserId) return;
 
     if (window.confirm('Are you sure you want to delete this task?')) {
       try {
-        await apiClient.delete(`/api/${user.id}/tasks/${task.id}`);
+        await apiClient.delete(`/api/${backendUserId}/tasks/${task.id}`);
         onTaskDeleted(task.id);
       } catch (err) {
         console.error('Error deleting task:', err);
@@ -69,11 +69,11 @@ export default function TaskItem({ task, onTaskUpdated, onTaskDeleted }: TaskIte
   };
 
   const toggleStatus = async () => {
-    if (!user) return;
+    if (!backendUserId) return;
 
     try {
       const newStatus = status === 'complete' ? 'incomplete' : 'complete';
-      const response = await apiClient.patch(`/api/${user.id}/tasks/${task.id}/complete`, {
+      const response = await apiClient.patch(`/api/${backendUserId}/tasks/${task.id}/complete`, {
         status: newStatus
       });
 

@@ -1,7 +1,13 @@
 from fastapi import HTTPException, status
 from typing import Union
 import uuid
-from ..models.user import User
+
+# Handle relative imports for different execution contexts
+try:
+    from ..models.user import User
+except ImportError:
+    # Direct imports for test environments
+    from models.user import User
 
 def validate_uuid(value: str) -> uuid.UUID:
     """
@@ -20,14 +26,14 @@ def validate_user_id_match(token_user_id: Union[str, uuid.UUID], url_user_id: Un
     Validate that the user ID in the JWT token matches the user ID in the URL parameter
     This is critical for user isolation and security
     """
-    # Convert to UUID if they're strings
-    if isinstance(token_user_id, str):
-        token_user_id = uuid.UUID(token_user_id)
-    if isinstance(url_user_id, str):
-        url_user_id = uuid.UUID(url_user_id)
+    # In our Better Auth integration:
+    # - token_user_id is the backend user UUID (from the get_current_user function which returns the backend user)
+    # - url_user_id is the backend user UUID from the URL path
+    # So we can compare them directly after converting to string
+    token_str = str(token_user_id)
+    url_str = str(url_user_id)
 
-    # Compare the UUIDs
-    if token_user_id != url_user_id:
+    if token_str != url_str:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied: User ID in token does not match user ID in URL"

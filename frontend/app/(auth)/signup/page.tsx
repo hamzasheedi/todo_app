@@ -30,10 +30,11 @@ export default function SignupPage() {
 
     try {
       await signup(email, password);
-      router.push('/tasks'); // Redirect to tasks page after signup
+      // Navigate to tasks page after successful signup
+      router.push('/tasks');
       router.refresh();
-    } catch (err) {
-      setError('Error creating account. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'Error creating account. Please try again.');
       console.error('Signup error:', err);
     }
   };
