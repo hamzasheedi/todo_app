@@ -24,7 +24,11 @@
       "Bash(powershell \"Get-ChildItem -Path backend -Recurse | Where-Object { $_Name -match ''migrat|alembic|version'' }\")",
       "Bash(dir backend)",
       "Bash(dir backend /s)",
-      "Bash(powershell \"Get-ChildItem -Path backend -Recurse\")"
+      "Bash(powershell \"Get-ChildItem -Path backend -Recurse\")",
+      "Bash(ls -la \"frontend/app/(auth)/\")",
+      "Bash(ls -la \"frontend/app/(dashboard)/\")",
+      "Bash(ls -la \"frontend/app/(dashboard)/tasks/\")",
+      "Bash(ls -la \"frontend/app/(auth)/login/\")"
     ]
   }
 }
