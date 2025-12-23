@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch --all --prune)",
+      "Bash(python -m pytest tests/test_json_storage.py -v)",
+      "Bash(python -m pytest tests/test_commands.py -v)",
+      "Bash(python -m pytest tests/test_sort.py -v)",
+      "Bash(python -m pytest tests/test_recurring_task.py -v)",
+      "Bash(python -m pytest tests/test_recurring_task_manager.py -v)",
+      "Bash(python -m pytest tests/test_reminder.py -v)",
+      "Bash(python -m pytest tests/test_reminder_manager.py -v)",
+      "Bash(python -m pytest tests/test_validators.py -v)",
+      "Bash(python -m pytest:*)",
+      "Bash(python .claude/skills/skill-creator/scripts/init_skill.py ui_ux_designer --path .claude/skills/)",
+      "Bash(dir .claudeskills /s)",
+      "Bash(move \"frontend\\app\\templates\\page-template.tsx\" \".claude\\skills\\frontend-architect\\templates\"\")",
+      "Bash(move frontend/app/templates/page-template.tsx .claude/skills/frontend-architect/templates/)",
+      "Bash(python -m uvicorn backend.main:app --port 8000)",
+      "Bash(dir \"C:\\Users\\Hamza\\Desktop\\todo_app\\frontend\\app\" /s)",
+      "Bash(dir \"C:\\Users\\Hamza\\Desktop\\todo_app\\frontend\\app\\auth\")",
+      "Bash(python -m uvicorn main:app --reload --port 8000)",
+      "Bash(echo \"from .user import User\nfrom .task import Task\n\n__all__ = [''User'', ''Task'']\")",
+      "Bash(python -m pytest tests/test_backend_integration.py -v)",
+      "Bash(powershell \"Get-ChildItem -Path backend -Recurse | Where-Object { $_Name -match ''migrat|alembic|version'' }\")",
+      "Bash(dir backend)",
+      "Bash(dir backend /s)",
+      "Bash(powershell \"Get-ChildItem -Path backend -Recurse\")",
+      "Bash(ls -la \"frontend/app/(auth)/\")",
+      "Bash(ls -la \"frontend/app/(dashboard)/\")",
+      "Bash(ls -la \"frontend/app/(dashboard)/tasks/\")",
+      "Bash(ls -la \"frontend/app/(auth)/login/\")"
+    ]
+  }
+}

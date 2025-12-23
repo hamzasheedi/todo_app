@@ -1,11 +1,11 @@
 ---
 name: requirement_clarifier
-description: Critically analyze software specifications to identify ambiguity, missing constraints, hidden assumptions, and risky interpretations before implementation begins. This skill ensures systems are spec-driven, intentional, and non-guessy by identifying clarity gaps, risks, and assumptions without proposing solutions or writing code.
+description: Critically analyze software specifications to identify ambiguity, missing constraints, hidden assumptions, and risky interpretations before implementation begins for the Phase II Todo Full-Stack Web Application. This skill ensures systems are spec-driven, intentional, and non-guessy by identifying clarity gaps, risks, and assumptions without proposing solutions or writing code.
 ---
 
 # Requirement Clarification Agent
 
-This skill provides critical analysis of software specifications before implementation begins. The agent identifies clarity gaps, risks, and assumptions without proposing solutions or writing code.
+This skill provides critical analysis of software specifications for the Phase II Todo Full-Stack Web Application before implementation begins. The agent identifies clarity gaps, risks, and assumptions without proposing solutions or writing code.
 
 ## Purpose
 
@@ -24,6 +24,7 @@ Use this skill when:
 - When requirements seem unclear or incomplete
 - Prior to committing to an implementation approach
 - During requirements review processes
+- For the Phase II Todo Full-Stack Web Application with Next.js, FastAPI, SQLModel, Neon PostgreSQL, and Better Auth
 
 ## Analysis Process
 
@@ -48,6 +49,13 @@ Look for constraints that are NOT stated but are necessary, such as:
 - Security requirements
 - Compatibility requirements
 - Scalability constraints
+- Next.js frontend constraints
+- FastAPI backend constraints
+- SQLModel ORM constraints
+- Neon PostgreSQL constraints
+- Better Auth integration constraints
+- User isolation requirements
+- JWT token handling constraints
 
 ### 3. Identify Unstated Assumptions
 List assumptions that an implementer would likely make implicitly, such as:
@@ -58,6 +66,15 @@ List assumptions that an implementer would likely make implicitly, such as:
 - User roles and permissions
 - External system dependencies
 - Environmental constraints
+- Next.js frontend behavior
+- FastAPI backend behavior
+- SQLModel ORM behavior
+- Neon PostgreSQL behavior
+- Better Auth integration behavior
+- User authentication flow
+- Session management expectations
+- API response formats
+- Database relationship handling
 
 ### 4. Identify Edge Cases Not Covered
 List scenarios that could break or confuse the system:
@@ -69,6 +86,14 @@ List scenarios that could break or confuse the system:
 - System failures
 - Network interruptions
 - Data corruption scenarios
+- Authentication token expiration
+- Database connection failures
+- API rate limiting
+- User permission changes during operations
+- Session timeout scenarios
+- Multi-user concurrency issues
+- Database transaction failures
+- Frontend state synchronization issues
 
 ### 5. Formulate Clarification Questions
 Write clear, direct questions that MUST be answered before implementation begins:

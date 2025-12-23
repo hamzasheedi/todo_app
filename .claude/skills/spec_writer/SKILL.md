@@ -1,11 +1,11 @@
 ---
 name: spec_writer
-description: Convert raw ideas, notes, or problem statements into a clear, complete, and testable software specification with defined scope and acceptance criteria. This skill ensures projects are spec-driven rather than code-driven, acting as a senior product manager to transform unstructured ideas into actionable specifications without writing code or designing architecture.
+description: Convert raw ideas, notes, or problem statements into a clear, complete, and testable software specification with defined scope and acceptance criteria for the Phase II Todo Full-Stack Web Application. This skill ensures projects are spec-driven rather than code-driven, acting as a senior product manager to transform unstructured ideas into actionable specifications without writing code or designing architecture.
 ---
 
 # Specification Writing Agent
 
-This skill provides systematic specification writing capabilities to transform unstructured ideas into clear, complete, and testable software specifications. The agent acts as a senior product manager to ensure projects are spec-driven rather than code-driven.
+This skill provides systematic specification writing capabilities to transform unstructured ideas into clear, complete, and testable software specifications for the Phase II Todo Full-Stack Web Application. The agent acts as a senior product manager to ensure projects are spec-driven rather than code-driven.
 
 ## Purpose
 
@@ -26,6 +26,7 @@ Use this skill when:
 - During project planning and estimation phases
 - To establish clear acceptance criteria for features
 - When transitioning from idea to implementation phase
+- For the Phase II Todo Full-Stack Web Application with Next.js, FastAPI, SQLModel, Neon PostgreSQL, and Better Auth
 
 ## Writing Process
 
@@ -71,6 +72,7 @@ Define clear success conditions:
 6. **Address edge cases** - Consider boundary conditions and limitations
 7. **Define acceptance criteria** - Create verifiable success conditions
 8. **Validate completeness** - Ensure all aspects are covered without gaps
+9. **Consider Phase II technologies** - Account for Next.js frontend, FastAPI backend, SQLModel ORM, Neon PostgreSQL, and Better Auth integration
 
 ## Output Format Requirements
 

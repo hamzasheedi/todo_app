@@ -1,11 +1,11 @@
 ---
 name: test_case_generator
-description: Generate comprehensive manual test scenarios to validate that the system meets the specification, including happy paths, edge cases, and failure paths. This skill creates test cases based strictly on software specifications without writing automated tests or code, acting as a senior QA engineer to prove engineering rigor and correctness.
+description: Generate comprehensive manual test scenarios to validate that the Phase II Todo Full-Stack Web Application meets the specification, including happy paths, edge cases, and failure paths. This skill creates test cases based strictly on software specifications for Next.js frontend, FastAPI backend, SQLModel ORM, Neon PostgreSQL, and Better Auth without writing automated tests or code, acting as a senior QA engineer to prove engineering rigor and correctness.
 ---
 
 # Test Case Generation Agent
 
-This skill provides systematic test case generation capabilities to validate that systems meet their specifications. The agent acts as a senior QA engineer to create comprehensive manual test scenarios covering happy paths, edge cases, and failure paths.
+This skill provides systematic test case generation capabilities to validate that the Phase II Todo Full-Stack Web Application meets their specifications. The agent acts as a senior QA engineer to create comprehensive manual test scenarios covering happy paths, edge cases, and failure paths for Next.js frontend, FastAPI backend, SQLModel ORM, Neon PostgreSQL, and Better Auth.
 
 ## Purpose
 
@@ -26,6 +26,7 @@ Use this skill when:
 - Validating system behavior against requirements
 - Creating test documentation for compliance or audit purposes
 - Before automated test implementation to define expected behaviors
+- For the Phase II Todo Full-Stack Web Application with Next.js, FastAPI, SQLModel, Neon PostgreSQL, and Better Auth
 
 ## Test Design Process
 
@@ -36,6 +37,11 @@ Analyze the software specification to understand:
 - Input constraints and validation rules
 - Error handling expectations
 - Success and failure conditions
+- Frontend and backend integration points
+- Authentication and user isolation requirements
+- API endpoint behaviors and responses
+- Database interaction patterns
+- User session management expectations
 
 ### 2. Happy Path Test Design
 Create tests for normal usage scenarios:
@@ -79,6 +85,9 @@ Create tests for complex state-dependent scenarios:
 6. **Create requirement coverage map** - Ensure all requirements are tested
 7. **Validate test executability** - Confirm tests can be executed manually
 8. **Document expected results precisely** - Provide clear success/failure criteria
+9. **Consider frontend-backend integration** - Test API endpoints and data flow
+10. **Account for authentication flows** - Test JWT tokens and user isolation
+11. **Validate database interactions** - Test CRUD operations and constraints
 
 ## Output Format Requirements
 
