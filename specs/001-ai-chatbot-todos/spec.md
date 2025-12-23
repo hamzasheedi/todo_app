@@ -128,12 +128,18 @@ When users provide unclear commands or encounter system errors, the chatbot shou
 - **FR-011**: System MUST route all AI logic through OpenAI Agents SDK via Gemini API
 - **FR-012**: System MUST execute all task operations exclusively via MCP tools
 - **FR-013**: System MUST provide clear error handling when tasks fail
+- **FR-014**: System MUST require basic authentication for task access and chatbot interaction
+- **FR-015**: System MUST provide clear, concise, polite responses with helpful suggestions
+- **FR-016**: System MUST handle AI service downtime by providing clear error messages with option to retry or use alternative
+- **FR-017**: System MUST display up to 50 tasks at once with pagination controls for larger lists
+- **FR-018**: System MUST limit user input to 500 characters and responses to 500 characters
 
 ### Key Entities
 
 - **Task**: Represents a user's to-do item with title, description, completion status, and creation timestamp
 - **Conversation**: Represents a user's interaction session with message history and context
 - **Message**: Represents individual exchanges between user and chatbot with timestamp and content
+- **User**: Represents an authenticated individual with associated tasks and conversations
 
 ## Success Criteria *(mandatory)*
 
@@ -147,3 +153,16 @@ When users provide unclear commands or encounter system errors, the chatbot shou
 - **SC-006**: All MCP tool invocations and errors are logged for QA and iterative improvement
 - **SC-007**: Users can complete basic task operations (add, list, complete, delete) in under 30 seconds per operation
 - **SC-008**: System demonstrates resilience to server restarts with no data loss
+- **SC-009**: System provides authentication mechanism for user identity verification
+- **SC-010**: System handles AI service outages gracefully with appropriate user feedback
+- **SC-011**: System manages large task lists with efficient pagination (50 items per page)
+
+## Clarifications
+
+### Session 2025-12-24
+
+- Q: How is user identity established and authenticated? → A: Basic authentication required for task access and chatbot
+- Q: What makes a response "friendly" in this context? → A: Clear, concise, polite language with helpful suggestions
+- Q: How should the system behave when the AI service is down? → A: Provide clear error message with option to retry or use alternative
+- Q: What are the limits on task display and pagination? → A: Display up to 50 tasks at once with pagination controls
+- Q: What are the limits on message lengths? → A: 500 characters for user input, 500 characters for responses
