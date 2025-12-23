@@ -93,7 +93,7 @@ def sync_user_with_backend(
 
     import uuid
     from datetime import datetime
-    # Create new user with Better Auth ID and set all required fields manually
+    # Create new user with Better Auth ID and all required fields manually set
     new_user = User(
         id=uuid.uuid4(),
         email=email,

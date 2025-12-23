@@ -43,7 +43,7 @@ export default function TaskForm({ onTaskCreated, backendUserId }: TaskFormProps
     setError('');
 
     try {
-      const response = await apiClient.post(`/api/${backendUserId}/tasks`, {
+      const response = await apiClient.post(`/${backendUserId}/tasks`, {
         title,
         description: description || null,
         status: 'incomplete'

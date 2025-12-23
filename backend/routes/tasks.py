@@ -9,7 +9,7 @@ try:
     from ..models.user import User
     from ..models.task import Task
     from ..schemas.task import TaskRead, TaskCreate, TaskUpdate, TaskComplete
-    from ..auth.jwt import get_current_user
+    from ..auth.backend_jwt import get_current_user_from_backend_jwt
     from ..utils.validation import validate_uuid, validate_user_id_match, validate_task_ownership
 except ImportError:
     # Direct imports for test environments
@@ -17,7 +17,7 @@ except ImportError:
     from models.user import User
     from models.task import Task
     from schemas.task import TaskRead, TaskCreate, TaskUpdate, TaskComplete
-    from auth.jwt import get_current_user
+    from auth.backend_jwt import get_current_user_from_backend_jwt
     from utils.validation import validate_uuid, validate_user_id_match, validate_task_ownership
 
 # Create router with user_id in the path
@@ -26,7 +26,7 @@ router = APIRouter(tags=["tasks"])
 @router.get("/{user_id}/tasks", response_model=List[TaskRead])
 def get_user_tasks(
     user_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_backend_jwt),
     session: Session = Depends(SessionLocal),
     sort: Optional[str] = Query(None, description="Sort options: newest_first, oldest_first, highest_priority, lowest_priority")
 ):
@@ -54,7 +54,7 @@ def get_user_tasks(
 def create_task(
     user_id: str,
     task_data: TaskCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_backend_jwt),
     session: Session = Depends(SessionLocal)
 ):
     """Create a new task for the specified user"""
@@ -64,12 +64,17 @@ def create_task(
     # Verify that the authenticated user matches the requested user_id
     validate_user_id_match(current_user.id, validated_user_id)
 
-    # Create new task
+    import uuid
+    from datetime import datetime
+    # Create new task with all required fields manually set
     db_task = Task(
+        id=uuid.uuid4(),
         user_id=validated_user_id,
         title=task_data.title,
         description=task_data.description,
-        status=task_data.status
+        status=task_data.status,
+        created_date=datetime.utcnow(),
+        updated_date=datetime.utcnow()
     )
 
     session.add(db_task)
@@ -82,7 +87,7 @@ def create_task(
 def get_task(
     user_id: str,
     task_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_backend_jwt),
     session: Session = Depends(SessionLocal)
 ):
     """Get a specific task for the user"""
@@ -114,7 +119,7 @@ def update_task(
     user_id: str,
     task_id: str,
     task_data: TaskUpdate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_backend_jwt),
     session: Session = Depends(SessionLocal)
 ):
     """Update a specific task for the user"""
@@ -147,6 +152,10 @@ def update_task(
     if task_data.status is not None:
         task.status = task_data.status
 
+    # Update the timestamp
+    from datetime import datetime
+    task.updated_date = datetime.utcnow()
+
     session.add(task)
     session.commit()
     session.refresh(task)
@@ -157,7 +166,7 @@ def update_task(
 def delete_task(
     user_id: str,
     task_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_backend_jwt),
     session: Session = Depends(SessionLocal)
 ):
     """Delete a specific task for the user"""
@@ -193,7 +202,7 @@ def update_task_completion(
     user_id: str,
     task_id: str,
     task_status: TaskComplete,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_from_backend_jwt),
     session: Session = Depends(SessionLocal)
 ):
     """Update the completion status of a specific task"""
@@ -227,6 +236,10 @@ def update_task_completion(
 
     # Update task status
     task.status = task_status.status
+
+    # Update the timestamp
+    from datetime import datetime
+    task.updated_date = datetime.utcnow()
 
     session.add(task)
     session.commit()

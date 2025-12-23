@@ -38,7 +38,7 @@ export default function TaskItem({ task, onTaskUpdated, onTaskDeleted, backendUs
     setError('');
 
     try {
-      const response = await apiClient.put(`/api/${backendUserId}/tasks/${task.id}`, {
+      const response = await apiClient.put(`/${backendUserId}/tasks/${task.id}`, {
         title,
         description: description || null,
         status
@@ -59,7 +59,7 @@ export default function TaskItem({ task, onTaskUpdated, onTaskDeleted, backendUs
 
     if (window.confirm('Are you sure you want to delete this task?')) {
       try {
-        await apiClient.delete(`/api/${backendUserId}/tasks/${task.id}`);
+        await apiClient.delete(`/${backendUserId}/tasks/${task.id}`);
         onTaskDeleted(task.id);
       } catch (err) {
         console.error('Error deleting task:', err);
@@ -73,7 +73,7 @@ export default function TaskItem({ task, onTaskUpdated, onTaskDeleted, backendUs
 
     try {
       const newStatus = status === 'complete' ? 'incomplete' : 'complete';
-      const response = await apiClient.patch(`/api/${backendUserId}/tasks/${task.id}/complete`, {
+      const response = await apiClient.patch(`/${backendUserId}/tasks/${task.id}/complete`, {
         status: newStatus
       });
 
