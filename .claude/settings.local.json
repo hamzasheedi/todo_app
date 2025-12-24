@@ -29,7 +29,9 @@
       "Bash(ls -la \"frontend/app/(dashboard)/\")",
       "Bash(ls -la \"frontend/app/(dashboard)/tasks/\")",
       "Bash(ls -la \"frontend/app/(auth)/login/\")",
-      "Bash(powershell -ExecutionPolicy Bypass -File \".specify/scripts/powershell/check-prerequisites.ps1\" -Json -PathsOnly)"
+      "Bash(powershell -ExecutionPolicy Bypass -File \".specify/scripts/powershell/check-prerequisites.ps1\" -Json -PathsOnly)",
+      "Bash(dir)",
+      "Bash(powershell -ExecutionPolicy Bypass -File .specify/scripts/powershell/setup-plan.ps1 -Json)"
     ]
   }
 }

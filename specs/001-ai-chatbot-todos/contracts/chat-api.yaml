@@ -1,0 +1,241 @@
+openapi: 3.0.0
+info:
+  title: Todo AI Chatbot API
+  description: API for AI-powered chatbot todo management
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api
+    description: Development server
+
+paths:
+  /chat:
+    post:
+      summary: Send message to AI chatbot
+      description: Process user message through AI agent and return response
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+                - conversation_id
+              properties:
+                message:
+                  type: string
+                  description: User's message to the chatbot
+                  example: "Add a task to buy groceries"
+                  maxLength: 500
+                conversation_id:
+                  type: string
+                  description: ID of the conversation (null for new)
+                  example: "123e4567-e89b-12d3-a456-426614174000"
+      responses:
+        '200':
+          description: AI response to the user message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    description: AI-generated response
+                    example: "I've added the task 'buy groceries' to your list."
+                  conversation_id:
+                    type: string
+                    description: ID of the conversation
+                    example: "123e4567-e89b-12d3-a456-426614174000"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /conversations:
+    get:
+      summary: List user conversations
+      description: Retrieve all conversations for the authenticated user
+      responses:
+        '200':
+          description: List of user conversations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Conversation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /conversations/{id}:
+    get:
+      summary: Get specific conversation
+      description: Retrieve a specific conversation by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Conversation ID
+      responses:
+        '200':
+          description: Conversation details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conversation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /messages/{conversation_id}:
+    get:
+      summary: Get messages for conversation
+      description: Retrieve all messages for a specific conversation
+      parameters:
+        - name: conversation_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Conversation ID
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+            maximum: 50
+          description: Number of messages to return (max 50)
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+          description: Number of messages to skip
+      responses:
+        '200':
+          description: List of messages in the conversation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  schemas:
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the conversation
+        title:
+          type: string
+          description: Title of the conversation
+        created_at:
+          type: string
+          format: date-time
+          description: When the conversation was created
+        updated_at:
+          type: string
+          format: date-time
+          description: When the conversation was last updated
+        user_id:
+          type: string
+          description: ID of the user who owns the conversation
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the message
+        content:
+          type: string
+          description: Content of the message
+          maxLength: 500
+        role:
+          type: string
+          enum: [user, assistant]
+          description: Role of the message sender
+        timestamp:
+          type: string
+          format: date-time
+          description: When the message was sent
+        conversation_id:
+          type: string
+          description: ID of the conversation this message belongs to
+        user_id:
+          type: string
+          description: ID of the user who sent the message
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the task
+        title:
+          type: string
+          description: Title of the task
+          maxLength: 200
+        description:
+          type: string
+          description: Detailed description of the task
+          maxLength: 500
+        completed:
+          type: boolean
+          description: Whether the task is completed
+        created_at:
+          type: string
+          format: date-time
+          description: When the task was created
+        updated_at:
+          type: string
+          format: date-time
+          description: When the task was last updated
+        user_id:
+          type: string
+          description: ID of the user who owns the task
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                description: Error details
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                description: Error details
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                description: Error details
