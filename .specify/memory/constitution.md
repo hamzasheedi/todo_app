@@ -1,8 +1,8 @@
 <!--
 Sync Impact Report:
-- Version change: 1.4.0 → 1.4.1
-- Modified principles: XX. Logging & Monitoring
-- Added sections: XXVIII. AI Fail-Safe Behavior, XXIX. Feedback Awareness
+- Version change: 1.4.1 → 1.4.2
+- Modified principles: XV. AI Integration Consistency → XV. AI Integration Consistency (Provider-Agnostic)
+- Added sections: XXX. Approved AI Providers (Phase III), XXXI. LLM Provider Resilience
 - Removed sections: None
 - Templates requiring updates:
   - .specify/templates/plan-template.md ⚠ pending
@@ -58,8 +58,8 @@ Conversation state is persisted to database; server holds no in-memory state. Ea
 ### XIV. MCP-Driven Task Management (AI Chatbot - Phase III)
 All task operations (add, list, update, complete, delete) must be performed exclusively via MCP tools. Each task operation must invoke the correct MCP tool with proper parameters.
 
-### XV. AI Integration Consistency (AI Chatbot - Phase III)
-All AI logic routed through OpenAI Agents SDK via Gemini API (base_url). All AI calls must use configured base_url pointing to Gemini API.
+### XV. AI Integration Consistency (Provider-Agnostic) (AI Chatbot - Phase III)
+All AI logic routed through OpenAI Agents SDK via OpenAI-compatible API (base_url). All AI calls must use configured base_url pointing to an OpenAI-compatible API endpoint. Provider selection is done exclusively through configuration.
 
 ### XVI. Reliability & Error Handling (AI Chatbot - Phase III)
 Graceful handling of missing tasks, invalid commands, and database errors. Return clear error messages for missing tasks or invalid operations.
@@ -102,6 +102,19 @@ Provide clear fallback responses if AI or MCP tool fails to execute a command, s
 
 ### XXIX. Feedback Awareness (AI Chatbot - Phase III)
 Log AI misinterpretations or errors to support future improvements in NLP accuracy. The system must capture and store feedback data about AI performance to enable iterative improvements to natural language processing capabilities.
+
+### XXX. Approved AI Providers (Phase III)
+The following AI providers are approved for use in Phase III implementation:
+- **Primary Provider:** Groq (OpenAI-compatible API)
+- **Approved Fallback Providers:** OpenRouter, Cohere (OpenAI-compatible where applicable)
+Provider changes must not require agent refactors, MCP tool changes, or stateless flow modifications.
+
+### XXXI. LLM Provider Resilience (AI Chatbot - Phase III)
+The system must demonstrate production-grade resilience to provider outages and quota limitations:
+- Implement graceful degradation when primary provider is unavailable
+- Support seamless failover between approved providers without architecture changes
+- Handle quota exhaustion with appropriate fallback mechanisms
+- No architecture rewrites required when switching between approved providers
 
 ## Feature Completion Standards
 
@@ -283,4 +296,8 @@ Backend must:
 
 All development must comply with this constitution. Amendments require explicit documentation, stakeholder approval, and migration plans. The constitution is the single source of truth for project governance.
 
-**Version**: 1.4.1 | **Ratified**: 2025-12-17 | **Last Amended**: 2025-12-24
+**Version**: 1.4.2 | **Ratified**: 2025-12-17 | **Last Amended**: 2026-01-31
+
+## Governance Rationale
+
+This amendment addresses production-grade resilience requirements by removing hard dependencies on a single AI provider. The transition from Gemini to Groq as the primary provider addresses API quota exhaustion and reliability constraints while maintaining the same OpenAI-compatible API interface. This change demonstrates real-world SaaS resilience by enabling seamless provider failover without architectural modifications.

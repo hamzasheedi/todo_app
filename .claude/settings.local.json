@@ -32,7 +32,15 @@
       "Bash(powershell -ExecutionPolicy Bypass -File \".specify/scripts/powershell/check-prerequisites.ps1\" -Json -PathsOnly)",
       "Bash(dir)",
       "Bash(powershell -ExecutionPolicy Bypass -File .specify/scripts/powershell/setup-plan.ps1 -Json)",
-      "Bash(powershell -ExecutionPolicy Bypass -File .specify/scripts/powershell/check-prerequisites.ps1 -Json)"
+      "Bash(powershell -ExecutionPolicy Bypass -File .specify/scripts/powershell/check-prerequisites.ps1 -Json)",
+      "Bash(dir \"C:\\Users\\Hamza\\Desktop\\todo_app\\frontend\\contexts\"\")",
+      "Bash(python -c \"from src.api import chat_endpoints; print(''Import successful'')\")",
+      "Bash(python -c \"from main import app; print(''Server import successful'')\")",
+      "Bash(python -c \"from main_simple import app; print(''Server import successful'')\")",
+      "Bash(python -c \"import sys; sys.path.append(''backend''); import backend.main; print(''Server import successful'')\")",
+      "Bash(python -c \"import sys; sys.path.insert(0, ''.''); from src.api.chat_endpoints import router; print(''ChatKit router imports successfully'')\")",
+      "Bash(python -c \"from src.api.chat_endpoints import router; print(''ChatKit router imports successfully'')\")",
+      "Bash(find . -name \"*.py\" -exec grep -l \"mcp_server\\|MCP\" {} ;)"
     ]
   }
 }
