@@ -1,192 +1,198 @@
-# Todo CLI Application
+# Todo AI Chatbot - Phase III (Basic Level Functionality)
 
-A command-line interface application for managing todo tasks with advanced features including priorities, tags, search, filtering, sorting, recurring tasks, and reminders.
+An AI-powered chatbot interface for managing todos using natural language, built with Python, FastAPI, SQLModel, and React/Next.js.
 
 ## Features
 
-- Add, view, update, and delete tasks
-- Mark tasks as complete/incomplete
-- Set task priorities (high, medium, low)
-- Organize tasks with tags
-- Search and filter tasks
-- Sort tasks by various criteria
-- Recurring tasks with different intervals
-- Time-based reminders for tasks
-- Backup and restore functionality
-- Configuration management
-- Comprehensive error handling
+- AI-powered chatbot that understands natural language commands
+- Add, list, update, complete, and delete tasks using conversational language
+- Maintain conversation context across multiple interactions
+- Persistent storage of tasks and conversation history in database
+- Stateless backend architecture with database persistence
+- MCP (Model Context Protocol) server for task operations
+- Frontend integration with ChatKit UI
+- Authentication and user isolation
+
+## Prerequisites
+
+- Python 3.8 or higher
+- Node.js 18+ and npm
+- pip (Python package installer)
+- Git
 
 ## Installation
 
-### Prerequisites
-- Python 3.11 or higher
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd todo-app
+   ```
 
-### Install from source
-```bash
-git clone <repository-url>
-cd todo-cli-app
-pip install -e .
-```
+2. **Backend Setup:**
+   ```bash
+   cd backend
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
 
-### Install from PyPI
-```bash
-pip install todo-cli-app
-```
+3. **Frontend Setup:**
+   ```bash
+   cd frontend  # from project root
+   npm install
+   ```
+
+4. **Environment Configuration:**
+   ```bash
+   # From project root
+   cp .env.example .env
+   # Edit .env with your configuration including:
+   # - GROQ_API_KEY: Your Groq API key (primary provider)
+   # - GROQ_BASE_URL: Groq API base URL (default: https://api.groq.com/openai/v1)
+   # - OPENAI_API_KEY: Your OpenAI API key (fallback provider)
+   # - OPENAI_BASE_URL: OpenAI API base URL (default: https://api.openai.com/v1)
+   # - Database URL
+   ```
+
+5. **Database Setup:**
+   ```bash
+   # From backend directory
+   alembic upgrade head
+   ```
 
 ## Usage
 
-### Interactive Mode
-```bash
-todo
-```
-This will launch the interactive menu-driven interface.
+1. **Start the Backend Server:**
+   ```bash
+   # From project root directory
+   python start_backend.py
+   ```
 
-### Command Line Usage
-```bash
-# Add a task
-todo add "Buy groceries" "Milk, bread, eggs"
+   OR, if running directly with uvicorn:
+   ```bash
+   # From project root directory
+   uvicorn app.main:app --reload --app-dir src
+   ```
 
-# Add a task with priority and tags
-todo add "Important meeting" --priority high --tags work,urgent
+   **Note**: The application uses a `src/app/` layout. When running uvicorn directly, ensure you use `--app-dir src` to correctly resolve imports from the `app` module.
 
-# View all tasks
-todo list
+2. **Start the Frontend Development Server:**
+   ```bash
+   cd frontend
+   npm run dev
+   ```
 
-# View tasks with specific status
-todo list --status incomplete
+3. **Access the Application:**
+   - Backend API: `http://localhost:8000`
+   - Frontend UI: `http://localhost:3000`
+   - Chat Interface: `http://localhost:3000/chat`
 
-# View tasks with specific priority
-todo list --priority high
+4. **Use the AI Chatbot:**
+   - Navigate to the chat interface
+   - Log in with your credentials
+   - Use natural language commands like:
+     - "Add a task to buy groceries"
+     - "Show me my tasks"
+     - "Complete the project report"
+     - "Update my shopping task to include milk and bread"
+     - "Delete the old task"
 
-# Filter tasks by tag
-todo list --tag work
+## API Endpoints
 
-# Search tasks
-todo search "groceries"
+### Backend API (http://localhost:8000)
 
-# Update a task
-todo update <task-id> --title "New title" --description "New description"
+**Core API (v1):**
+- `POST /api/v1/chat/` - Chat endpoint for natural language task management
+- `GET /api/v1/conversations/` - List user's conversations
+- `GET /api/v1/conversations/{conversation_id}` - Get conversation history
+- `POST /api/v1/tasks/` - Create a new task
+- `GET /api/v1/tasks/` - List tasks with pagination
+- `GET /api/v1/tasks/{task_id}` - Get a specific task
+- `PUT /api/v1/tasks/{task_id}` - Update a specific task
+- `DELETE /api/v1/tasks/{task_id}` - Delete a specific task
 
-# Mark a task as complete
-todo complete <task-id>
+**Legacy API:**
+- `GET /` - Root endpoint
+- `GET /health` - Health check
+- `GET /api/tasks` - Get all tasks (legacy)
+- `POST /api/tasks` - Create a new task (legacy)
 
-# Mark a task as incomplete
-todo incomplete <task-id>
+### MCP Server
+- All task operations are executed exclusively via MCP tools
+- Tools: add_task, list_tasks, update_task, complete_task, delete_task
+- All tools require authentication and user context
 
-# Delete a task
-todo delete <task-id>
+## Architecture
 
-# Sort tasks
-todo list --sort priority
+### Backend
+- **Framework**: FastAPI
+- **ORM**: SQLModel with PostgreSQL (Neon)
+- **Authentication**: JWT-based with user isolation
+- **AI Integration**: OpenAI Agents SDK configured with OpenAI-compatible API (Groq as primary provider)
+- **MCP Server**: Model Context Protocol server for task operations
+- **Database**: Neon Serverless PostgreSQL with Alembic migrations
 
-# Add a recurring task
-todo recurring add "Daily exercise" --interval daily --start-date 2025-01-01
-
-# Add a reminder
-todo reminder add <task-id> --time "2025-01-02T09:00:00"
-```
+### Frontend
+- **Framework**: Next.js 16+ with App Router
+- **UI**: Tailwind CSS with ChatKit integration
+- **State Management**: React Context API
+- **API Client**: Custom API client with authentication handling
 
 ## Configuration
 
-The application stores configuration in `~/.todo/config.json`:
-```json
-{
-  "default_priority": "medium",
-  "show_completed": true,
-  "auto_backup": true,
-  "backup_retention_days": 30,
-  "storage_path": "/home/user/.todo/tasks.json"
-}
-```
+### Environment Variables
 
-## Data Model
+**Backend (.env):**
+- `GROQ_API_KEY` - Your Groq API key (primary provider)
+- `GROQ_BASE_URL` - Groq API base URL (default: https://api.groq.com/openai/v1)
+- `OPENAI_API_KEY` - Your OpenAI API key (fallback provider)
+- `OPENAI_BASE_URL` - OpenAI API base URL (default: https://api.openai.com/v1)
+- `DATABASE_URL` - Database connection string
+- `AUTH_SECRET` - Secret for JWT authentication
+- `JWT_SECRET` - Secret for JWT token signing
+- `NEXTAUTH_URL` - Base URL for the application
 
-### Task Attributes
-- `id`: Unique identifier (UUID string)
-- `title`: Task title (1-200 characters)
-- `description`: Task description (0-1000 characters)
-- `status`: Completion status ("incomplete", "complete")
-- `priority`: Task priority ("low", "medium", "high")
-- `tags`: Array of category tags (0-10 tags)
-- `due_date`: Optional deadline (ISO 8601 datetime string)
-- `created_date`: Timestamp of creation (ISO 8601 datetime string)
-- `updated_date`: Timestamp of last modification (ISO 8601 datetime string)
-- `recurrence_pattern`: Optional recurrence rule for recurring tasks
+### MCP Tool Configuration
 
-### Recurring Task Attributes
-- `base_task`: Template task with all standard task attributes
-- `recurrence_rule`: Frequency pattern ("daily", "weekly", "monthly", "yearly")
-- `next_occurrence`: Next scheduled occurrence (ISO 8601 datetime string)
-- `is_active`: Enable/disable flag
-- `end_date`: Optional end date for recurrence (ISO 8601 datetime string)
-- `continue_after_completion`: Policy for continuing after completion
+All task operations are performed exclusively through MCP tools:
+- `add_task`: Create new tasks with title and description
+- `list_tasks`: Retrieve user's tasks with pagination support
+- `update_task`: Modify existing tasks
+- `complete_task`: Mark tasks as completed
+- `delete_task`: Remove tasks
 
-### Reminder Attributes
-- `task_id`: Reference to associated task
-- `reminder_time`: Scheduled notification time (ISO 8601 datetime string)
-- `status`: Current status ("pending", "triggered", "missed", "cancelled")
+## Constraints & Architecture Decisions
 
-## Advanced Features
+1. **Stateless Backend**: All state is persisted in the database; no in-memory state
+2. **MCP-Only Operations**: All task mutations happen through MCP tools
+3. **AI Routing**: All AI logic routes through OpenAI Agents SDK via OpenAI-compatible API (provider-agnostic)
+4. **User Isolation**: Strict data separation between users
+5. **Pagination**: Task lists limited to 50 items with pagination controls
+6. **Input Validation**: All user input limited to 500 characters
 
-### Recurring Tasks
-Create tasks that automatically generate new instances based on recurrence rules:
-- Daily, weekly, monthly, or yearly intervals
-- Optional end dates for recurrence
-- Configurable continuation policies after task completion
+## Running Tests
 
-### Reminders
-Set time-based notifications for tasks:
-- ISO 8601 datetime format required
-- Multiple reminders per task
-- Automatic status tracking (pending, triggered, missed)
-
-### Search and Filter
-- Search by keyword in title or description
-- Filter by status, priority, or tags
-- Sort by priority, due date, or alphabetically
-
-### Backup and Restore
-Automatic backup functionality:
-- Configurable backup retention
-- Manual backup creation
-- Restore from previous backups
-
-## Development
-
-### Running Tests
+To run backend tests:
 ```bash
-pytest
+cd backend
+python -m pytest
 ```
 
-### Running Specific Tests
+## Database Migrations
+
+To run database migrations:
 ```bash
-pytest tests/test_task.py
+cd backend
+alembic revision --autogenerate -m "Migration message"
+alembic upgrade head
 ```
 
-### Code Quality
-```bash
-# Run all tests
-pytest tests/
+## Deployment
 
-# Check code coverage
-pytest --cov=src tests/
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Add tests for new functionality
-5. Run tests (`pytest`)
-6. Commit your changes (`git commit -m 'Add amazing feature'`)
-7. Push to the branch (`git push origin feature/amazing-feature`)
-8. Open a pull request
+The application supports independent frontend and backend deployment:
+- Backend: Deploy to any Python-compatible hosting (Heroku, AWS, GCP, etc.)
+- Frontend: Deploy to Vercel, Netlify, or any static hosting service
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Support
-
-If you encounter any issues, please file a bug report in the GitHub repository.
+MIT License

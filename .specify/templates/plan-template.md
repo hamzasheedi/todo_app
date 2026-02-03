@@ -31,7 +31,12 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- All AI logic must route through OpenAI Agents SDK via OpenAI-compatible API
+- Provider selection done exclusively through configuration (base_url)
+- MCP tools must be used for all task operations
+- Stateless architecture must be maintained
+- All user requests must be authenticated via Better Auth
+- Database operations must enforce user isolation via user_id
 
 ## Project Structure
 
