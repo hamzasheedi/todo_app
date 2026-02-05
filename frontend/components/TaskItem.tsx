@@ -93,16 +93,16 @@ export default function TaskItem({ task, onTaskUpdated, onTaskDeleted, backendUs
         onChange={toggleStatus}
         className={`mt-1 h-5 w-5 rounded focus:ring-0 cursor-pointer ${
           status === 'complete'
-            ? 'bg-[#39FF14] border-[#39FF14] text-[#39FF14]'
-            : 'bg-[#1a1f33] border-[#AAB0C0] text-[#00F5FF]'
+            ? 'bg-text-positive border-text-positive text-text-positive'
+            : 'bg-bg-surface border-text-secondary text-brand-primary'
         }`}
       />
       <div className="flex-1 min-w-0">
         {isEditing ? (
           <form onSubmit={handleUpdate} className="space-y-3">
             {error && (
-              <div className="rounded-md bg-red-500/20 p-2 border border-red-500/30">
-                <div className="text-xs text-red-300">{error}</div>
+              <div className="rounded-md bg-status-error/20 p-2 border border-status-error/30">
+                <div className="text-xs text-status-error">{error}</div>
               </div>
             )}
             <div>
@@ -110,7 +110,7 @@ export default function TaskItem({ task, onTaskUpdated, onTaskDeleted, backendUs
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-[#0B0F1A] border border-gray-600 rounded-lg px-3 py-2 text-[#F5F7FA] focus:outline-none focus:ring-2 focus:ring-[#00F5FF] focus:border-[#00F5FF]"
+                className="w-full bg-bg-primary border border-gray-600 rounded-lg px-3 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
                 maxLength={200}
                 required
               />
@@ -120,7 +120,7 @@ export default function TaskItem({ task, onTaskUpdated, onTaskDeleted, backendUs
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={2}
-                className="w-full bg-[#0B0F1A] border border-gray-600 rounded-lg px-3 py-2 text-[#F5F7FA] focus:outline-none focus:ring-2 focus:ring-[#00F5FF] focus:border-[#00F5FF]"
+                className="w-full bg-bg-primary border border-gray-600 rounded-lg px-3 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
                 maxLength={1000}
               />
             </div>
@@ -128,7 +128,7 @@ export default function TaskItem({ task, onTaskUpdated, onTaskDeleted, backendUs
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as 'complete' | 'incomplete')}
-                className="bg-[#0B0F1A] border border-gray-600 rounded-lg px-2 py-1 text-sm text-[#F5F7FA] focus:outline-none focus:ring-2 focus:ring-[#00F5FF] focus:border-[#00F5FF]"
+                className="bg-bg-primary border border-gray-600 rounded-lg px-2 py-1 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
               >
                 <option value="incomplete">Active</option>
                 <option value="complete">Completed</option>
@@ -136,7 +136,7 @@ export default function TaskItem({ task, onTaskUpdated, onTaskDeleted, backendUs
               <button
                 type="submit"
                 disabled={loading}
-                className="text-sm bg-[#00F5FF] text-[#0B0F1A] px-3 py-1 rounded-lg hover:bg-[#00F5FF]/90 disabled:opacity-50 font-medium"
+                className="text-sm bg-brand-primary text-bg-primary px-3 py-1 rounded-lg hover:bg-brand-primary/90 disabled:opacity-50 font-medium transition-all duration-200"
               >
                 {loading ? 'Saving...' : 'Save'}
               </button>
@@ -149,7 +149,7 @@ export default function TaskItem({ task, onTaskUpdated, onTaskDeleted, backendUs
                   setStatus(task.status as 'complete' | 'incomplete');
                   setError('');
                 }}
-                className="text-sm text-[#AAB0C0] px-3 py-1 rounded-lg border border-gray-600 hover:text-[#F5F7FA] hover:border-[#00F5FF]"
+                className="text-sm text-text-secondary px-3 py-1 rounded-lg border border-gray-600 hover:text-text-primary hover:border-brand-primary transition-all duration-200"
               >
                 Cancel
               </button>
@@ -157,15 +157,15 @@ export default function TaskItem({ task, onTaskUpdated, onTaskDeleted, backendUs
           </form>
         ) : (
           <div>
-            <h3 className={`font-medium ${status === 'complete' ? 'line-through text-[#AAB0C0]' : 'text-[#F5F7FA]'}`}>
+            <h3 className={`font-medium ${status === 'complete' ? 'line-through text-text-secondary' : 'text-text-primary'}`}>
               {title}
             </h3>
             {description && (
-              <p className={`mt-1 text-sm ${status === 'complete' ? 'text-[#5a6170]' : 'text-[#AAB0C0]'}`}>
+              <p className={`mt-1 text-sm ${status === 'complete' ? 'text-text-disabled' : 'text-text-secondary'}`}>
                 {description}
               </p>
             )}
-            <p className="mt-2 text-xs text-[#5a6170]">
+            <p className="mt-2 text-xs text-text-disabled">
               Created: {new Date(task.created_date).toLocaleDateString()}
               {task.updated_date !== task.created_date && (
                 <span>, Updated: {new Date(task.updated_date).toLocaleDateString()}</span>
@@ -178,13 +178,13 @@ export default function TaskItem({ task, onTaskUpdated, onTaskDeleted, backendUs
         <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => setIsEditing(true)}
-            className="text-sm text-[#00F5FF] hover:text-[#00F5FF]/80 hover:underline"
+            className="text-sm text-brand-primary hover:text-brand-secondary hover:underline transition-colors duration-200"
           >
             Edit
           </button>
           <button
             onClick={handleDelete}
-            className="text-sm text-[#B026FF] hover:text-[#B026FF]/80 hover:underline"
+            className="text-sm text-brand-secondary hover:text-brand-secondary/80 hover:underline transition-colors duration-200"
           >
             Delete
           </button>

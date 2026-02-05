@@ -2,11 +2,12 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { authClient } from '../lib/auth-client';
+import { apiClient } from '../lib/api-client';
 
 interface AuthContextType {
   user: any;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string, name?: string) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
 }
@@ -48,24 +49,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       // Sync the Better Auth user with our backend
-      const syncResponse = await fetch('http://localhost:8000/api/auth/sync-user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          better_auth_id: betterAuthUser.id, // Better Auth user ID
-          email: betterAuthUser.email
-        })
+      const syncData = await apiClient.post('/auth/sync-user', {
+        better_auth_id: betterAuthUser.id, // Better Auth user ID
+        email: betterAuthUser.email
       });
 
-      if (!syncResponse.ok) {
-        const errorText = await syncResponse.text();
-        console.error('Failed to sync user with backend:', errorText);
-        return null;
-      }
-
-      const syncData = await syncResponse.json();
       console.log('User sync response:', syncData);
 
       // Store the backend token for API calls
@@ -123,11 +111,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signup = async (email: string, password: string) => {
+  const signup = async (email: string, password: string, name?: string) => {
     setLoading(true);
     try {
+      // Use provided name or extract from email (before @ symbol) for signup
+      const displayName = name || email.split('@')[0];
+
       // Sign up the user
-      const response = await authClient.signUp.email({ email, password });
+      const response = await authClient.signUp.email({ email, password, name: displayName });
       if (response?.error) {
         throw new Error(response.error.message || 'Signup failed');
       }

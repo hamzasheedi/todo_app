@@ -46,10 +46,10 @@ export default function UserNavigation() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 text-[#AAB0C0] hover:text-[#F5F7FA] transition-colors duration-200"
+        className="flex items-center space-x-2 text-text-secondary hover:text-text-primary transition-colors duration-200"
         aria-label="User menu"
       >
-        <div className="w-8 h-8 rounded-full bg-[#1a1f33] border border-gray-600 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full bg-bg-surface border border-gray-600 flex items-center justify-center">
           <span className="text-sm font-medium">
             {user.firstName?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || 'U'}
           </span>
@@ -57,13 +57,13 @@ export default function UserNavigation() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-[#0B0F1A] border border-gray-700 rounded-lg shadow-lg z-50 py-2">
+        <div className="absolute right-0 mt-2 w-48 bg-bg-primary border border-gray-700 rounded-lg shadow-lg z-50 py-2">
           <div className="px-4 py-2 border-b border-gray-700">
-            <p className="text-xs text-[#AAB0C0] truncate">📧 {user.email}</p>
+            <p className="text-xs text-text-secondary truncate">📧 {user.email}</p>
           </div>
           <button
             onClick={handleLogout}
-            className="w-full text-left px-4 py-2 text-[#AAB0C0] hover:bg-[#1a1f33] hover:text-[#F5F7FA] transition-colors duration-200 flex items-center"
+            className="w-full text-left px-4 py-2 text-text-secondary hover:bg-bg-surface hover:text-text-primary transition-colors duration-200 flex items-center"
           >
             <span className="mr-2">🚪</span>
             Logout

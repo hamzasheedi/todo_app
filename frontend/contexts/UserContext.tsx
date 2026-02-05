@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from '@/components/AuthWrapper';
 import { authClient, getJWTToken } from '@/lib/auth-client';
+import { apiClient } from '@/lib/api-client';
 import { useRouter } from 'next/navigation';
 
 interface UserContextType {
@@ -19,17 +20,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const getAuthHeaders = (): Record<string, string> => {
-      // Use the backend token stored after sync
-      const token = localStorage.getItem('backend_token');
-      console.log('UserContext - Backend token being sent:', token ? 'Exists' : 'Missing');
-
-      return {
-        'Authorization': `Bearer ${token || ''}`,
-        'Content-Type': 'application/json',
-      };
-    };
-
     const fetchBackendUserId = async () => {
       if (user) {
         try {
@@ -37,36 +27,22 @@ export function UserProvider({ children }: { children: ReactNode }) {
           await new Promise(resolve => setTimeout(resolve, 150));
 
           // Use the apiClient which has proper token extraction
-          const response = await fetch('http://localhost:8000/api/auth/me', {
-            method: 'GET',
-            headers: getAuthHeaders(),
-          });
+          const response = await apiClient.get('/auth/me');
 
-          if (response.ok) {
-            const userData = await response.json();
-            setBackendUserId(userData.id); // Use the backend UUID
-            setLoading(false);
-          } else {
-            console.error('Failed to get user info from backend');
-            // Redirect to login if backend authentication fails
-            router.push('/login');
-          }
+          setBackendUserId(response.id); // Use the backend UUID
+          setLoading(false);
         } catch (err) {
           console.error('Error fetching user info:', err);
-          // Redirect to login if there's an error
-          router.push('/login');
+          // Don't redirect to login, just set loading to false
+          setLoading(false);
         }
-      } else if (!authLoading) {
-        // If there's no user and auth isn't loading, redirect to login
-        router.push('/login');
+      } else {
+        // If there's no user, just set loading to false
+        setLoading(false);
       }
     };
 
-    if (user) {
-      fetchBackendUserId();
-    } else if (!authLoading) {
-      router.push('/login');
-    }
+    fetchBackendUserId();
   }, [user, authLoading, router]);
 
   return (

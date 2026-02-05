@@ -1,116 +1,97 @@
 'use client';
 
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { useTheme } from '@/contexts/ThemeContext';
+import { motion } from 'framer-motion';
 import { useAuth } from '@/components/AuthWrapper';
-import { useRouter, usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const BottomNavigation = () => {
-  const { user, loading, logout } = useAuth();
-  const router = useRouter();
   const pathname = usePathname();
-  const [isVisible, setIsVisible] = useState(true);
+  const { theme } = useTheme();
+  const { logout, user } = useAuth();
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  // Handle navigation and visibility
-  const handleNavigation = (path: string) => {
-    if (pathname === path) return; // Don't navigate if already on the same page
-    router.push(path);
+  // Define navigation items
+  const navItems = [
+    { href: '/', label: 'Home', icon: '🏠' },
+    { href: '/tasks', label: 'Tasks', icon: '📝' },
+    { href: '/chat', label: 'AI Chat', icon: '🤖' },
+  ];
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      await logout();
+      router.push('/login');
+      router.refresh();
+    } catch (error) {
+      console.error('Logout error:', error);
+      setIsLoggingOut(false);
+    }
   };
 
-  // Hide navigation on auth pages
-  useEffect(() => {
-    const shouldHide = pathname.startsWith('/login') || pathname.startsWith('/signup');
-    setIsVisible(!shouldHide);
-  }, [pathname]);
-
-  // Don't show if loading or should be hidden
-  if (loading || !isVisible) {
+  // Only show bottom nav if user is authenticated
+  if (!user) {
     return null;
   }
 
   return (
-    <nav className="fixed bottom-4 left-4 right-4 max-w-md mx-auto z-50">
-      <div className="flex justify-around items-center relative">
-        {/* Home Button */}
+    <motion.nav
+      initial={{ y: 100 }}
+      animate={{ y: 0 }}
+      transition={{ type: 'spring', damping: 20 }}
+      className="fixed bottom-0 left-0 right-0 bg-bg-secondary border-t border-gray-700 z-50 md:hidden"
+    >
+      <div className="flex justify-around items-center py-3">
+        {navItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`flex flex-col items-center justify-center px-4 py-2 rounded-xl transition-all duration-300 relative ${
+              pathname === item.href
+                ? 'text-brand-primary bg-brand-primary/10'
+                : 'text-text-secondary hover:text-text-primary'
+            }`}
+          >
+            <motion.span
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="text-xl mb-1"
+            >
+              {item.icon}
+            </motion.span>
+            <span className="text-xs">{item.label}</span>
+            {pathname === item.href && (
+              <motion.div
+                layoutId="activeTabIndicator"
+                className="absolute bottom-0 w-8 h-0.5 bg-brand-primary rounded-full"
+                initial={false}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              />
+            )}
+          </Link>
+        ))}
+
+        {/* Logout button - styled differently to be less dominant */}
         <button
-          onClick={() => handleNavigation('/')}
-          className={`flex flex-col items-center px-4 py-3 rounded-xl transition-all duration-300 relative z-10 ${
-            pathname === '/'
-              ? 'text-[#00F5FF] scale-110'
-              : 'text-[#AAB0C0] hover:text-[#F5F7FA]'
-          }`}
-          aria-label="Home"
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="flex flex-col items-center justify-center px-4 py-2 rounded-xl transition-all duration-300 text-text-disabled hover:text-text-negative disabled:opacity-50"
         >
-          <span className="text-lg mb-1">🏠</span>
-          <span className="text-xs">Home</span>
+          <motion.span
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="text-xl mb-1"
+          >
+            {isLoggingOut ? '⏳' : '🚪'}
+          </motion.span>
+          <span className="text-xs">Logout</span>
         </button>
-
-        {/* Conditional buttons based on auth status */}
-        {user ? (
-          <>
-            {/* Tasks Button - Primary for logged in users */}
-            <button
-              onClick={() => handleNavigation('/tasks')}
-              className={`flex flex-col items-center px-4 py-3 rounded-xl transition-all duration-300 relative z-10 ${
-                pathname === '/tasks'
-                  ? 'text-[#00F5FF] scale-110'
-                  : 'text-[#AAB0C0] hover:text-[#F5F7FA] hover:text-[#00F5FF]'
-              }`}
-              aria-label="Tasks"
-            >
-              <span className="text-lg mb-1">📋</span>
-              <span className="text-xs">Tasks</span>
-            </button>
-
-            {/* Logout Button */}
-            <button
-              onClick={async () => {
-                try {
-                  await logout();
-                  router.push('/'); // Redirect to home after logout
-                } catch (error) {
-                  console.error('Logout error:', error);
-                }
-              }}
-              className="flex flex-col items-center px-4 py-3 rounded-xl transition-all duration-300 text-[#AAB0C0] hover:text-[#F5F7FA] hover:text-[#B026FF] relative z-10"
-              aria-label="Logout"
-            >
-              <span className="text-lg mb-1">🚪</span>
-              <span className="text-xs">Logout</span>
-            </button>
-          </>
-        ) : (
-          <>
-            {/* Login Button - Primary for logged out users */}
-            <button
-              onClick={() => handleNavigation('/login')}
-              className={`flex flex-col items-center px-4 py-3 rounded-xl transition-all duration-300 relative z-10 ${
-                pathname === '/login'
-                  ? 'text-[#00F5FF] scale-110'
-                  : 'text-[#AAB0C0] hover:text-[#F5F7FA] hover:text-[#00F5FF]'
-              }`}
-              aria-label="Login"
-            >
-              <span className="text-lg mb-1">🔐</span>
-              <span className="text-xs">Login</span>
-            </button>
-
-            {/* Sign Up Button */}
-            <button
-              onClick={() => handleNavigation('/signup')}
-              className={`flex flex-col items-center px-4 py-3 rounded-xl transition-all duration-300 relative z-10 ${
-                pathname === '/signup'
-                  ? 'text-[#B026FF] scale-110'
-                  : 'text-[#AAB0C0] hover:text-[#F5F7FA] hover:text-[#B026FF]'
-              }`}
-              aria-label="Sign Up"
-            >
-              <span className="text-lg mb-1">✍️</span>
-              <span className="text-xs">Sign Up</span>
-            </button>
-          </>
-        )}
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 

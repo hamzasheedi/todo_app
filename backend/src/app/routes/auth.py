@@ -3,6 +3,7 @@ from sqlmodel import Session, select
 from typing import Optional
 import uuid
 from pydantic import BaseModel
+import hashlib
 
 from app.database.database import SessionLocal
 from app.models.user import User
@@ -12,6 +13,23 @@ from app.auth.backend_jwt import create_backend_jwt, get_current_user_from_backe
 
 # Create router
 router = APIRouter(prefix="/api/auth", tags=["auth"])
+
+class EmailPasswordSignInRequest(BaseModel):
+    email: str
+    password: str
+
+class EmailPasswordSignUpRequest(BaseModel):
+    email: str
+    password: str
+    name: Optional[str] = None
+
+def hash_password(password: str) -> str:
+    """Simple password hashing function"""
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a password against its hash"""
+    return hash_password(plain_password) == hashed_password
 
 @router.get("/me")
 def get_authenticated_user(current_user: User = Depends(get_current_user_from_backend_jwt)):

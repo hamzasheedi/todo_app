@@ -62,18 +62,18 @@ export default function TaskForm({ onTaskCreated, backendUserId }: TaskFormProps
 
   return (
     <div className="mb-6">
-      <h2 className="text-xl font-semibold text-[#F5F7FA] mb-4 flex items-center">
-        <span className="w-2 h-2 bg-[#00F5FF] rounded-full mr-2"></span>
+      <h2 className="text-xl font-semibold text-text-primary mb-4 flex items-center">
+        <span className="w-2 h-2 bg-brand-primary rounded-full mr-2"></span>
         Add New Task
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="rounded-md bg-red-500/20 p-3 border border-red-500/30">
-            <div className="text-sm text-red-300">{error}</div>
+          <div className="rounded-md bg-status-error/20 p-3 border border-status-error/30">
+            <div className="text-sm text-status-error">{error}</div>
           </div>
         )}
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-[#AAB0C0] mb-2">
+          <label htmlFor="title" className="block text-sm font-medium text-text-secondary mb-2">
             Task Title *
           </label>
           <input
@@ -81,13 +81,13 @@ export default function TaskForm({ onTaskCreated, backendUserId }: TaskFormProps
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full bg-[#0B0F1A] border border-gray-600 rounded-lg px-3 py-2 text-[#F5F7FA] focus:outline-none focus:ring-2 focus:ring-[#00F5FF] focus:border-[#00F5FF]"
+            className="w-full bg-bg-primary border border-gray-600 rounded-lg px-3 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
             placeholder="What needs to be done?"
             maxLength={200}
           />
         </div>
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-[#AAB0C0] mb-2">
+          <label htmlFor="description" className="block text-sm font-medium text-text-secondary mb-2">
             Description
           </label>
           <textarea
@@ -95,7 +95,7 @@ export default function TaskForm({ onTaskCreated, backendUserId }: TaskFormProps
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
-            className="w-full bg-[#0B0F1A] border border-gray-600 rounded-lg px-3 py-2 text-[#F5F7FA] focus:outline-none focus:ring-2 focus:ring-[#00F5FF] focus:border-[#00F5FF]"
+            className="w-full bg-bg-primary border border-gray-600 rounded-lg px-3 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
             placeholder="Add details (optional)"
             maxLength={1000}
           />
@@ -104,7 +104,7 @@ export default function TaskForm({ onTaskCreated, backendUserId }: TaskFormProps
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-[#0B0F1A] bg-[#00F5FF] hover:bg-[#00F5FF]/90 focus:outline-none focus:ring-2 focus:ring-[#00F5FF] focus:ring-offset-2 disabled:opacity-50"
+            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-bg-primary bg-brand-primary hover:bg-brand-primary/90 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 disabled:opacity-50 transition-all duration-200"
           >
             {loading ? 'Creating...' : 'Add Task'}
           </button>

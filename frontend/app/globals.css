@@ -3,25 +3,108 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --color-bg-primary: #0B0F1A;
+  --color-bg-secondary: #0E1424;
+  --color-bg-tertiary: #090C16;
+  --color-bg-card: #11162A;
+  --color-bg-surface: #1A1F33;
+
+  --color-text-primary: #F5F7FA;
+  --color-text-secondary: #AAB0C0;
+  --color-text-accent: #00F5FF;
+  --color-text-positive: #39FF14;
+  --color-text-negative: #FF1493;
+  --color-text-disabled: #5A6275;
+
+  --color-brand-primary: #00F5FF;
+  --color-brand-secondary: #B026FF;
+
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+  --radius-full: 9999px;
+
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+/* Custom animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(var(--rotation)); }
+  50% { transform: translateY(-10px) rotate(var(--rotation)); }
+}
+
+@keyframes floatGlow {
+  0%, 100% {
+    transform: translateY(0) rotate(var(--rotation));
+    box-shadow: 0 0 15px rgba(0, 245, 255, 0.3);
+  }
+  50% {
+    transform: translateY(-10px) rotate(var(--rotation));
+    box-shadow: 0 0 25px rgba(0, 245, 255, 0.5);
   }
 }
 
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-glow {
+  animation: floatGlow 4s ease-in-out infinite;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 body {
-  color: rgb(var(--foreground-rgb));
+  color: var(--color-text-primary);
   background: linear-gradient(
       to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+      var(--color-bg-primary),
+      var(--color-bg-secondary),
+      var(--color-bg-tertiary)
+    );
 }

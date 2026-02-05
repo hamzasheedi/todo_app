@@ -19,6 +19,7 @@ interface Message {
 export function ChatKitWrapper({ conversationId, onConversationChange }: ChatKitWrapperProps) {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isConversationLoading, setIsConversationLoading] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const { user } = useAuth();
@@ -29,14 +30,25 @@ export function ChatKitWrapper({ conversationId, onConversationChange }: ChatKit
   // Fetch conversation history if conversationId exists
   useEffect(() => {
     if (conversationId && isAuthenticated) {
-      fetchConversationHistory(conversationId);
+      // Only fetch if we don't already have messages
+      if (messages.length === 0) {
+        fetchConversationHistory(conversationId).finally(() => {
+          setIsConversationLoading(false);
+        });
+      } else {
+        setIsConversationLoading(false);
+      }
+    } else {
+      // If no conversation exists, still set loading to false
+      setIsConversationLoading(false);
     }
-  }, [conversationId, isAuthenticated]);
+  }, [conversationId, isAuthenticated, messages.length]);
 
   const fetchConversationHistory = async (id: string) => {
     try {
       const response = await apiClient.get(`/api/v1/conversations/${id}`);
-      const data = response.data;
+      // The response is already parsed by apiClient.handleResponse
+      const data = response;
 
       // Transform the conversation data to match our Message interface
       const chatMessages: Message[] = data.messages.map((msg: any) => ({
@@ -49,18 +61,23 @@ export function ChatKitWrapper({ conversationId, onConversationChange }: ChatKit
       setMessages(chatMessages);
     } catch (error) {
       console.error('Error fetching conversation history:', error);
-      // Start with empty messages if there's an error
+      // If it's a 404 error (conversation not found), start with empty messages
+      // Otherwise, log the error but still start with empty messages
       setMessages([]);
     }
   };
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
+  // Scroll to bottom once when component mounts to show input field
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    // Wait for the component to render before scrolling
+    const timer = setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Removed auto-scrolling to bottom on new messages - users can scroll manually
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,13 +96,19 @@ export function ChatKitWrapper({ conversationId, onConversationChange }: ChatKit
     setIsLoading(true);
 
     try {
-      // Call the backend API - use the v1 API endpoint
+      // Call the backend API - use the correct API endpoint
       const response = await apiClient.post('/api/v1/chat/', {
         message: input,
         conversation_id: conversationId || undefined
       });
 
-      const { response: botResponse, conversation_id: newConversationId } = response.data;
+      // Handle the response based on its actual structure
+      // The response should have the structure defined in ChatResponse
+      const responseData = response; // apiClient.handleResponse already parses JSON
+
+      // Extract the required fields from the response
+      const botResponse = responseData.response;
+      const newConversationId = responseData.conversation_id;
 
       // Update conversation ID if it's new
       if (newConversationId && !conversationId) {
@@ -119,15 +142,24 @@ export function ChatKitWrapper({ conversationId, onConversationChange }: ChatKit
   };
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg shadow-md border">
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[calc(100vh-250px)]">
-        {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
-            <h3 className="text-lg font-medium text-gray-700 mb-2">Welcome to AI Todo Assistant!</h3>
-            <p className="text-gray-500 max-w-md">
+    <div className="flex flex-col h-full bg-bg-card bg-opacity-60 backdrop-blur-sm rounded-2xl border border-gray-700">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {isConversationLoading ? (
+          <div className="flex flex-col items-center justify-center h-full text-center text-text-secondary py-12">
+            <div className="flex space-x-2 mb-4">
+              <div className="w-3 h-3 bg-cyan-500 rounded-full animate-bounce"></div>
+              <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce delay-100"></div>
+              <div className="w-3 h-3 bg-emerald-500 rounded-full animate-bounce delay-200"></div>
+            </div>
+            <p>Loading your conversation...</p>
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center text-text-secondary">
+            <h3 className="text-lg font-medium text-text-primary mb-2">Welcome to AI Todo Assistant!</h3>
+            <p className="text-text-secondary max-w-md">
               I can help you manage your tasks with natural language. Try saying things like:
             </p>
-            <ul className="mt-3 text-left text-gray-500 list-disc list-inside space-y-1 max-w-md">
+            <ul className="mt-3 text-left text-text-secondary list-disc list-inside space-y-1 max-w-md">
               <li>"Add a task to buy groceries"</li>
               <li>"Show me my tasks"</li>
               <li>"Complete the project report task"</li>
@@ -143,12 +175,12 @@ export function ChatKitWrapper({ conversationId, onConversationChange }: ChatKit
               <div
                 className={`max-w-[80%] rounded-lg px-4 py-2 ${
                   message.role === 'user'
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-800'
+                    ? 'bg-brand-primary text-bg-primary'
+                    : 'bg-bg-surface text-text-primary'
                 }`}
               >
                 <div className="whitespace-pre-wrap">{message.content}</div>
-                <div className={`text-xs mt-1 ${message.role === 'user' ? 'text-blue-200' : 'text-gray-500'}`}>
+                <div className={`text-xs mt-1 ${message.role === 'user' ? 'text-bg-primary' : 'text-text-secondary'}`}>
                   {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
               </div>
@@ -157,11 +189,11 @@ export function ChatKitWrapper({ conversationId, onConversationChange }: ChatKit
         )}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-gray-200 text-gray-800 rounded-lg px-4 py-2 max-w-[80%]">
+            <div className="bg-bg-surface text-text-primary rounded-lg px-4 py-2 max-w-[80%]">
               <div className="flex space-x-2">
-                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-75"></div>
-                <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-150"></div>
+                <div className="w-2 h-2 bg-text-secondary rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-text-secondary rounded-full animate-bounce delay-75"></div>
+                <div className="w-2 h-2 bg-text-secondary rounded-full animate-bounce delay-150"></div>
               </div>
             </div>
           </div>
@@ -169,25 +201,25 @@ export function ChatKitWrapper({ conversationId, onConversationChange }: ChatKit
         <div ref={messagesEndRef} />
       </div>
 
-      <form onSubmit={handleSubmit} className="border-t p-4">
+      <form onSubmit={handleSubmit} className="border-t border-gray-700 p-4 mt-auto">
         <div className="flex space-x-2">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message here..."
-            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 bg-bg-primary border border-gray-600 rounded-lg px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-opacity-50"
             disabled={isLoading}
           />
           <button
             type="submit"
             disabled={isLoading || !input.trim()}
-            className="bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+            className="bg-brand-gradient text-white rounded-lg px-4 py-2 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-opacity-50 disabled:opacity-50 transition-all duration-200"
           >
             Send
           </button>
         </div>
-        <p className="text-xs text-gray-500 mt-2">
+        <p className="text-xs text-text-secondary mt-2">
           Example: "Add a task to buy groceries", "Show me my tasks", "Complete task X"
         </p>
       </form>

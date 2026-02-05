@@ -40,34 +40,34 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0B0F1A] via-[#0E1424] to-[#090C16] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-b from-bg-primary via-bg-secondary to-bg-tertiary flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         {/* Branding Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[#F5F7FA] flex items-center justify-center">
-            <span className="text-[#00F5FF] mr-2">✓</span>
-            TaskFlow
+          <h1 className="text-3xl font-bold text-text-primary flex items-center justify-center">
+            <span className="text-brand-primary mr-2">✓</span>
+            TaskFlow AI
           </h1>
-          <p className="text-[#AAB0C0] mt-2">Organize your work. Stay focused.</p>
-          <div className="w-16 h-0.5 bg-gradient-to-r from-[#00F5FF] to-[#B026FF] mx-auto mt-4 opacity-50"></div>
+          <p className="text-text-secondary mt-2">Organize your work. Stay focused.</p>
+          <div className="w-16 h-0.5 bg-brand-gradient mx-auto mt-4 opacity-50"></div>
         </div>
 
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-semibold text-[#F5F7FA] mb-2">Create your account</h2>
-          <p className="text-[#AAB0C0]">Start organizing your tasks today.</p>
+          <h2 className="text-2xl font-semibold text-text-primary mb-2">Create your account</h2>
+          <p className="text-text-secondary">Start organizing your tasks today.</p>
         </div>
 
-        <div className="bg-[#11162A] bg-opacity-60 backdrop-blur-sm rounded-2xl border border-gray-700 p-8 shadow-2xl shadow-[rgba(0,245,255,0.05)]">
+        <div className="bg-bg-card bg-opacity-60 backdrop-blur-sm rounded-2xl border border-gray-700 p-8 shadow-2xl shadow-[rgba(0,245,255,0.05)]">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <div className="rounded-md bg-red-500/20 p-3 border border-red-500/30">
-                <div className="text-sm text-red-300">{error}</div>
+              <div className="rounded-md bg-status-error/20 p-3 border border-status-error/30">
+                <div className="text-sm text-status-error">{error}</div>
               </div>
             )}
 
             <div className="space-y-4">
               <div>
-                <label htmlFor="email-address" className="block text-sm font-medium text-[#AAB0C0] mb-2">
+                <label htmlFor="email-address" className="block text-sm font-medium text-text-secondary mb-2">
                   Email address
                 </label>
                 <input
@@ -78,13 +78,13 @@ export default function SignupPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-[#0B0F1A] border border-gray-600 rounded-lg px-3 py-3 text-[#F5F7FA] focus:outline-none focus:ring-2 focus:ring-[#00F5FF] focus:border-[#00F5FF]"
+                  className="w-full bg-bg-primary border border-gray-600 rounded-lg px-3 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
                   placeholder="Enter your email"
                 />
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-[#AAB0C0] mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-text-secondary mb-2">
                   Password
                 </label>
                 <input
@@ -95,13 +95,13 @@ export default function SignupPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-[#0B0F1A] border border-gray-600 rounded-lg px-3 py-3 text-[#F5F7FA] focus:outline-none focus:ring-2 focus:ring-[#00F5FF] focus:border-[#00F5FF]"
+                  className="w-full bg-bg-primary border border-gray-600 rounded-lg px-3 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
                   placeholder="Create a password"
                 />
               </div>
 
               <div>
-                <label htmlFor="confirm-password" className="block text-sm font-medium text-[#AAB0C0] mb-2">
+                <label htmlFor="confirm-password" className="block text-sm font-medium text-text-secondary mb-2">
                   Confirm Password
                 </label>
                 <input
@@ -112,7 +112,7 @@ export default function SignupPage() {
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full bg-[#0B0F1A] border border-gray-600 rounded-lg px-3 py-3 text-[#F5F7FA] focus:outline-none focus:ring-2 focus:ring-[#00F5FF] focus:border-[#00F5FF]"
+                  className="w-full bg-bg-primary border border-gray-600 rounded-lg px-3 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
                   placeholder="Confirm your password"
                 />
               </div>
@@ -120,7 +120,7 @@ export default function SignupPage() {
 
             <div className="flex items-center justify-between">
               <div className="text-sm">
-                <Link href="/login" className="text-[#00F5FF] hover:text-[#00F5FF]/80 hover:underline">
+                <Link href="/login" className="text-brand-primary hover:text-brand-primary/80 hover:underline transition-colors duration-200">
                   Already have an account? Sign in
                 </Link>
               </div>
@@ -130,7 +130,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-[#0B0F1A] bg-[#00F5FF] hover:bg-[#00F5FF]/90 focus:outline-none focus:ring-2 focus:ring-[#00F5FF] focus:ring-offset-2 disabled:opacity-50"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-bg-primary bg-brand-primary hover:bg-brand-primary/90 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 disabled:opacity-50 transition-all duration-200"
               >
                 {loading ? 'Creating account...' : 'Sign up'}
               </button>
